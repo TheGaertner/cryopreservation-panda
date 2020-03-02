@@ -1,0 +1,9 @@
+client.pro.user
+panda-controller/build
+user-interface/build
+user-interface/external
+
+
+*.pro
+*.user
+*.autosave

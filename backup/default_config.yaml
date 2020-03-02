@@ -1,0 +1,16 @@
+robot_ip: 192.168.3.101
+
+client_ip: 10.162.15.80
+
+nuc_tcp: 'biolab-017:5000'
+nuc_tcp_port: 5000
+nuc_udp_port: 4005
+nuc_udp_broadcast_addresse: '10.162.15.255'
+
+camera_0_name: "/dev/video4"
+camera_0_port: 6000
+
+camera_1_name: "/dev/video10"
+camera_1_port: 6001
+
+udp_client_port: 4001
