@@ -21,6 +21,7 @@ Videostream::Videostream(int port, int position){
 
 void Videostream::run()
 {
+    qDebug() << (port_) << endl;
     cv::VideoCapture capture("udpsrc port=" + std::to_string(port_) + " ! application/x-rtp, payload=127 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink sync=false", cv::CAP_GSTREAMER);
     if (!capture.isOpened()) {
         //Error

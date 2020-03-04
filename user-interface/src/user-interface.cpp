@@ -269,7 +269,7 @@ void UserInterface::on_pushButton_4_clicked()
 }
 
 
-#include "rpc/client.h"
+// #include "rpc/client.h"
 #include <nlohmann/json.hpp>
 //#include "cpp_utils/network.hpp"
 using json = nlohmann::json;
