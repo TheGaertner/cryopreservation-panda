@@ -1,5 +1,6 @@
 #!/bin/sh -e
 
+# openCV with aruco and gstreamer
 sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev python-dev python-numpy libjpeg-dev libpng-dev
 
 cd
@@ -23,7 +24,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
 make -j$(nproc --all)
 sudo make install
 
-cd
-rm -r opencv opencv_contrib
-
 sudo ldconfig
+
+cd ../..
+rm -r opencv opencv_contrib
