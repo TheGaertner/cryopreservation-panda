@@ -21,6 +21,13 @@ system(./install_symbol.sh)
 
 
 SOURCES += \
+    ../panda-controller/cpp-utils/src/network.cpp \
+    ../panda-controller/cpp-utils/src/conversion.cpp \
+    ../panda-controller/cpp-utils/src/files.cpp \
+    ../panda-controller/cpp-utils/src/json.cpp \
+    ../panda-controller/cpp-utils/src/math.cpp \
+    ../panda-controller/cpp-utils/src/output.cpp \
+    ../panda-controller/cpp-utils/src/system.cpp \
     ../panda-controller/src/serialization.cpp \
     ../panda-controller/src/config_handler.cpp \
     external/qcustomplot/qcustomplot.cpp \
@@ -52,6 +59,7 @@ LIBS += $(shell pkg-config opencv4 --libs)
 
 INCLUDEPATH += /usr/include/eigen3
 INCLUDEPATH += ../panda-controller/include
+INCLUDEPATH += ../panda-controller/cpp-utils/include
 INCLUDEPATH += ./include
 
 # Default rules for deployment.
@@ -68,5 +76,7 @@ LIBS += \
         -lboost_serialization\
         -lfranka\
         -lyaml-cpp\
-        -lcpp_utils\
         -lstdc++fs\
+        -lopencv_aruco
+
+#-lcpp_utils\

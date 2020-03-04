@@ -269,16 +269,12 @@ void UserInterface::on_pushButton_4_clicked()
 }
 
 
-#include "rpc/client.h"
-#include <nlohmann/json.hpp>
-//#include "cpp_utils/network.hpp"
 using json = nlohmann::json;
 
 void UserInterface::on_pushButton_6_clicked()
 {
     nlohmann::json response;
     cpp_utils::rpc_call("biolab-017",9001,"lock_brakes",{"192.168.3.101","franka","frankaRSI"},response);
-
 }
 
 void UserInterface::on_pushButton_7_clicked()
