@@ -21,11 +21,10 @@ Videostream::Videostream(int port, int position){
 
 void Videostream::run()
 {
-    qDebug() << (port_) << endl;
     cv::VideoCapture capture("udpsrc port=" + std::to_string(port_) + " ! application/x-rtp, payload=127 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink sync=false", cv::CAP_GSTREAMER);
     if (!capture.isOpened()) {
         //Error
-        qDebug() << "Error" << endl;
+        qDebug() << "Error while open GStreamer" << capture.isOpened() << endl;
     }
 
     cv::Mat frame;
@@ -40,7 +39,7 @@ void Videostream::run()
                     );
 
         if (!capture.read(frame)) {
-            qDebug() << "Error during read frame" << endl;
+            // qDebug() << "Error during read frame" << endl;
         }
         else
         {

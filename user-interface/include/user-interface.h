@@ -28,8 +28,7 @@
 
 #include "opencv2/opencv.hpp"
 
-
-#include <cpp_utils/cpp_utils/network.hpp>
+#include <cpp_utils/network.hpp>
 
 #include <QGraphicsPixmapItem>
 #include <QThread>
