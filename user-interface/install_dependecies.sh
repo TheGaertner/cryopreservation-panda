@@ -2,6 +2,8 @@
 
 sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev python-dev python-numpy libjpeg-dev libpng-dev
 
+sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+
 cd
 git clone https://github.com/opencv/opencv.git
 git clone https://github.com/opencv/opencv_contrib.git
@@ -15,7 +17,6 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D CMAKE_INSTALL_PREFIX=/usr/local \
       -D WITH_V4L=ON \
       -D WITH_GSTREAMER=ON \
-      -D WITH_GSTREAMER_0_10=OFF \
       -D WITH_QT=ON \
       -D WITH_OPENGL=ON \
       -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
