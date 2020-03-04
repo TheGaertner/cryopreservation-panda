@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+sudo apt-get install -y sshpass
+
 sudo apt-get install -y libeigen3-dev build-essential git libpoco-dev
 sudo apt-get install -y gstreamer1.0-plugins-bad
 
