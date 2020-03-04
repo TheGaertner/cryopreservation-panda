@@ -2,7 +2,7 @@
 
 std::experimental::filesystem::path config_location;
 
-void ConfigHandler::setConfig(std::experimental::filesystem::path command, bool global = false){
+void ConfigHandler::setConfig(std::experimental::filesystem::path command, bool global, std::string name){
 
     char buff[512];
     FILE *fpipe = popen("pwd","r");
@@ -27,26 +27,35 @@ void ConfigHandler::setConfig(std::experimental::filesystem::path command, bool 
     if(global){
         config_location = config_location.parent_path();
     }
-    config_location/="config.yaml";
+    config_location/=name;
+
+    std::cout << config_location << std::endl;
 }
 
-YAML::Node ConfigHandler::getConfig(){
+YAML::Node ConfigHandler::getConfig(std::string name){
 
     YAML::Node config;
-    if(std::experimental::filesystem::exists(config_location)){
-        config = YAML::LoadFile(config_location);
+    std::experimental::filesystem::path config_location_temp = config_location;
+    config_location_temp.remove_filename()/=name;
+
+//    std::cout << config_location << std::endl;
+//    std::cout << config_location_temp << std::endl;
+
+    if(std::experimental::filesystem::exists(config_location_temp)){
+        config = YAML::LoadFile(config_location_temp);
     }else{
-        config_location = config_location.remove_filename();
-        config_location/="default_config.yaml";
-        config = YAML::LoadFile(config_location);
+        std::cout << "Config file does not exist!" << std::endl;
     }
 
     return config;
 }
 
 
-void ConfigHandler::updateConfig(YAML::Node config){
-    std::ofstream fout(config_location);
+void ConfigHandler::updateConfig(YAML::Node config, std::string name){
+    std::experimental::filesystem::path config_location_temp = config_location;
+    config_location_temp.remove_filename()/=name;
+
+    std::ofstream fout(config_location_temp);
     fout << config;
     fout.flush();
 }

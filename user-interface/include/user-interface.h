@@ -36,6 +36,7 @@
 
 #include <videostream.h>
 #include <tcp_command.h>
+#include <marker.h>
 
 #include <franka/model.h>
 
@@ -121,6 +122,18 @@ private slots:
 
     void on_lineEdit_2_returnPressed();
 
+    void on_pushButton_18_clicked();
+
+    void on_pushButton_16_clicked();
+
+    void on_pushButton_19_clicked();
+
+    void on_pushButton_20_clicked();
+
+    void on_pushButton_17_clicked();
+
+    void on_pushButton_21_clicked();
+
 private:
     Ui::UserInterface *ui;
     QUdpSocket *socket_udp_ = nullptr;
@@ -139,6 +152,7 @@ private:
     double counter = 0;
     int save_image_counter_ = 0;
     QString command_;
+    Marker marker_;
 
 };
 #endif // USER_INTERFACE_H

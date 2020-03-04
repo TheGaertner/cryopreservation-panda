@@ -1,19 +1,29 @@
 #ifndef MARKER_H
 #define MARKER_H
 
+#include <iostream>
+
+#include <Eigen/Dense>
+
 #include <opencv2/core.hpp>
 #include <opencv2/aruco.hpp>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/core/eigen.hpp>
+
+#include <serialization.h>
 
 
 class Marker
 {
 public:
-    void get_marker_positions(cv::Mat image);
+    std::tuple<std::vector<int>, std::vector<Eigen::Matrix<double, 4, 4>>> get_marker(cv::Mat image);
     cv::Mat draw_marker(cv::Mat image);
+
     Marker();
+    Marker(StateSerialization *last_state);
 
 private:
-    int test;
+    StateSerialization *last_state_;
     cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_250);
     cv::Mat cameraMatrix = (cv::Mat_<double>(3,3) << 1.3446766408879266e+03, 0., 9.5950000000000000e+02, 0.,
                             1.3446766408879266e+03, 5.3950000000000000e+02, 0., 0., 1.);

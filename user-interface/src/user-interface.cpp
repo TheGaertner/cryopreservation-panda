@@ -152,6 +152,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     , ui(new Ui::UserInterface)
     , last_time(std::chrono::duration_cast< std::chrono::microseconds >(
                     std::chrono::system_clock::now().time_since_epoch()))
+    , marker_(&last_state_)
 {
 
     ui->setupUi(this);
@@ -236,7 +237,6 @@ void UserInterface::on_pushButton_clicked()
 
 }
 
-#include <boost/algorithm/string.hpp>
 
 void UserInterface::on_pushButton_2_clicked()
 {
@@ -543,105 +543,48 @@ void UserInterface::on_pushButton_13_clicked()
 
 }
 
-Eigen::Matrix<double, 4, 4> getPostion(cv::Mat frame, int id){
 
-    cv::Mat frameCopy;
-    frame.copyTo(frameCopy);
-
-    cv::FileStorage fs;
-    fs.open("camera_calibration_parameter.yaml", cv::FileStorage::READ);
-    if( !fs.isOpened() ){
-        qDebug() << " Fail to open " << "camera_calibration_parameter.yaml" << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    cv::Mat cameraMatrix, distCoeffs, rvecs, tvecs;
-    fs["cameraMatrix"] >> cameraMatrix;
-    fs["distCoeffs"] >> distCoeffs;
-
-    std::vector<int> ids;
-    std::vector<std::vector<cv::Point2f>> corners;
-    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_250);
-
-    cv::aruco::detectMarkers(frame, dictionary, corners, ids);
-
-    cv::Mat postion;
-
-    if(ids[0]==100){
-        cv::aruco::drawDetectedMarkers(frameCopy, corners, ids);
-        std::vector<cv::Vec3d> rvecs, tvecs;
-        cv::aruco::estimatePoseSingleMarkers(corners, 0.16, cameraMatrix, distCoeffs, rvecs, tvecs);
-
-        cv::Mat rotation_matrix(3,3,CV_64F);
-        cv::Mat complete_matrix(4,4,CV_64F);
-
-        cv::Rodrigues(rvecs[0],rotation_matrix);
-
-        complete_matrix.zeros(4,4,CV_64F);
-        complete_matrix.at<double>(0,0) = rotation_matrix.at<double>(0,0);
-        complete_matrix.at<double>(0,1) = rotation_matrix.at<double>(0,1);
-        complete_matrix.at<double>(0,2) = rotation_matrix.at<double>(0,2);
-        complete_matrix.at<double>(1,0) = rotation_matrix.at<double>(1,0);
-        complete_matrix.at<double>(1,1) = rotation_matrix.at<double>(1,1);
-        complete_matrix.at<double>(1,2) = rotation_matrix.at<double>(1,2);
-        complete_matrix.at<double>(2,0) = rotation_matrix.at<double>(2,0);
-        complete_matrix.at<double>(2,1) = rotation_matrix.at<double>(2,1);
-        complete_matrix.at<double>(2,2) = rotation_matrix.at<double>(2,2);
-
-
-        complete_matrix.at<double>(0,3) = tvecs[0][0];
-        complete_matrix.at<double>(1,3) = tvecs[0][1];
-        complete_matrix.at<double>(2,3) = tvecs[0][2];
-        complete_matrix.at<double>(3,3) = 1;
-
-        postion = complete_matrix;
-    }
-
-    Eigen::Matrix<double, 4, 4> C_T_M;
-    cv::cv2eigen(postion, C_T_M);
-
-    return C_T_M;
-}
 
 void UserInterface::on_pushButton_14_clicked()
 {
     cv::Mat frame = videostream_0->last_image_;
-    Eigen::Matrix<double, 4, 4> C_T_M = getPostion(frame,100);
+
+    std::tuple<std::vector<int>,std::vector<Eigen::Matrix<double, 4, 4>>> output;
+    output = marker_.get_marker(frame);
+
+    ui->listWidget->clear();
+    qDebug() << std::get<0>(output).size() << endl;
+    for(int i = 0; i < std::get<0>(output).size(); i++){
+        new QListWidgetItem(QString::number(std::get<0>(output)[i]), ui->listWidget);
 
 
-    Eigen::Matrix<double, 4, 4> EE_T_C;
-    EE_T_C = Eigen::Array44d::Zero();
 
-    EE_T_C(1,0) = 1;
-    EE_T_C(0,1) = -1;
-    EE_T_C(2,2) = 1;
-
-    EE_T_C(0,3) = 0.05;
-    EE_T_C(1,3) = -0.025;
-    EE_T_C(3,3) = 1;
-
-
-    Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(last_state_.state_->O_T_EE.data());
-
-    std::cout << "O_T_M: " << std::endl;
-    std::cout <<  O_T_EE * EE_T_C * C_T_M << std::endl;
-
-    cv::Mat frame2 = videostream_1->last_image_;
-    Eigen::Matrix<double, 4, 4> C2_T_M = getPostion(frame2,100);
-
-
-    std::cout << "C2_T_M: " << std::endl;
-    std::cout << C2_T_M << std::endl;
-
-    std::cout << "O_T_C2: " << std::endl;
-    std::cout <<  O_T_EE * EE_T_C * C_T_M * C2_T_M.inverse() << std::endl;
+    }
 
 }
 
 void UserInterface::on_pushButton_15_clicked()
 {
+    cv::Mat frame = videostream_0->last_image_;
 
+    std::tuple<std::vector<int>,std::vector<Eigen::Matrix<double, 4, 4>>> output;
+    output = marker_.get_marker(frame);
+
+    for(int i = 0; i < std::get<0>(output).size(); i++){
+        if(std::get<0>(output)[i] == ui->lineEdit_4->text().toInt())
+        {
+            YAML::Node config = ConfigHandler::getConfig("poses.yaml");
+            Eigen::Matrix<double, 4, 4> matrix = std::get<1>(output)[i];
+
+            std::vector<double> vec(matrix.data(), matrix.data() + matrix.rows() * matrix.cols());
+
+            config[ui->lineEdit_10->text().toStdString()]["Start"] =vec;
+            ConfigHandler::updateConfig(config,"poses.yaml");
+        }
+
+    }
 }
+
 
 void UserInterface::on_lineEdit_7_returnPressed()
 {
@@ -673,4 +616,149 @@ void UserInterface::on_lineEdit_8_returnPressed()
 
 void UserInterface::on_lineEdit_2_returnPressed(){
 
+}
+
+void UserInterface::on_pushButton_18_clicked()
+{
+
+    cv::Mat frame = videostream_0->last_image_;
+
+    std::tuple<std::vector<int>,std::vector<Eigen::Matrix<double, 4, 4>>> output;
+    output = marker_.get_marker(frame);
+
+    ui->listWidget->clear();
+
+    QString command;
+    for(int i = 0; i < std::get<0>(output).size(); i++){
+        qDebug()  << std::get<0>(output)[i] << " " << ui->lineEdit_9->text().toInt() << endl;
+        if(std::get<0>(output)[i] == ui->lineEdit_9->text().toInt())
+        {
+            Eigen::Matrix<double, 4, 4> matrix = std::get<1>(output)[i];
+
+//            Eigen::Matrix<double, 3, 3> rotation = matrix.block(0,0,3,3);
+
+//            rotation = rotation*Eigen::Quaterniond(0,1,0,0)*Eigen::Quaterniond(0.7071068,0,0,-0.7071068);
+
+//            matrix.block(0,0,3,3) = rotation;
+
+            matrix = matrix.inverse().eval();
+            matrix(2,3) += 0.1;
+            matrix = matrix.inverse().eval();
+
+            command = "AbsPose";
+
+
+            Eigen::Matrix<double, 3, 3> rotation = matrix.block(0,0,3,3);
+            std::cout << "Print: rotation.eulerAngles(0,1,2)  " << std::endl;
+            std::cout << rotation.eulerAngles(0,1,2) << std::endl;
+
+            for(int j = 0; j < 16; j++){
+                command+= " ";
+                command+= QString::number(matrix(j%4,j/4)+0.0000000001);
+            }
+        }
+
+    }
+
+    if(command.size()==0){
+        qDebug() << "Marker not found!" << endl;
+    }else{
+
+        qDebug() << command << endl;
+
+        emit tcp_abs_pose(command);
+    }
+
+}
+
+void UserInterface::on_pushButton_16_clicked()
+{
+    YAML::Node config = ConfigHandler::getConfig("poses.yaml");
+    std::vector<double> start_position = config[ui->lineEdit_10->text().toStdString()]["Start"].as<std::vector<double>>();
+
+    Eigen::Matrix<double, 4, 4> start_position_eigen(start_position.data());
+
+    Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(last_state_.state_->O_T_EE.data());
+
+    Eigen::Matrix<double, 4, 4> rel_position = start_position_eigen.inverse()*O_T_EE;
+
+    std::vector<double> vec(rel_position.data(), rel_position.data() + rel_position.rows() * rel_position.cols());
+
+    config[ui->lineEdit_10->text().toStdString()][ui->lineEdit_5->text().toStdString()] =vec;
+
+    ConfigHandler::updateConfig(config,"poses.yaml");
+
+}
+
+void UserInterface::on_pushButton_19_clicked()
+{
+    cv::Mat frame = videostream_0->last_image_;
+
+    std::tuple<std::vector<int>,std::vector<Eigen::Matrix<double, 4, 4>>> output;
+    output = marker_.get_marker(frame);
+
+    Eigen::Matrix<double, 4, 4> matrix;
+
+    for(int i = 0; i < std::get<0>(output).size(); i++){
+        if(std::get<0>(output)[i] == ui->lineEdit_4->text().toInt())
+        {
+            YAML::Node config = ConfigHandler::getConfig("poses.yaml");
+            matrix = std::get<1>(output)[i];
+
+            std::vector<double> vec(matrix.data(), matrix.data() + matrix.rows() * matrix.cols());
+
+            config[ui->lineEdit_10->text().toStdString()]["Start"] =vec;
+            ConfigHandler::updateConfig(config,"poses.yaml");
+        }
+
+    }
+}
+
+void UserInterface::on_pushButton_20_clicked()
+{
+    YAML::Node config = ConfigHandler::getConfig("poses.yaml");
+    std::vector<double> start_position = config[ui->lineEdit_10->text().toStdString()]["Start"].as<std::vector<double>>();
+    Eigen::Matrix<double, 4, 4> start_position_eigen(start_position.data());
+    std::vector<double> relative_position = config[ui->lineEdit_10->text().toStdString()][ui->lineEdit_5->text().toStdString()].as<std::vector<double>>();
+    Eigen::Matrix<double, 4, 4> relative_position_eigen(relative_position.data());
+
+    Eigen::Matrix<double, 4, 4> matrix = start_position_eigen*relative_position_eigen;
+
+    QString command = "AbsPose";
+
+    for(int j = 0; j < 16; j++){
+        command+= " ";
+        command+= QString::number(matrix(j%4,j/4)+0.0000000001);
+    }
+
+    emit tcp_abs_pose(command);
+}
+
+void UserInterface::on_pushButton_17_clicked()
+{
+    YAML::Node config = ConfigHandler::getConfig("poses.yaml");
+
+    Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(last_state_.state_->O_T_EE.data());
+
+    std::vector<double> vec(O_T_EE.data(), O_T_EE.data() + O_T_EE.rows() * O_T_EE.cols());
+
+    config["Absolut Pose"][ui->lineEdit_6->text().toStdString()] =vec;
+    ConfigHandler::updateConfig(config,"poses.yaml");
+}
+
+void UserInterface::on_pushButton_21_clicked()
+{
+    YAML::Node config = ConfigHandler::getConfig("poses.yaml");
+
+    std::vector<double> start_position = config["Absolut Pose"][ui->lineEdit_6->text().toStdString()].as<std::vector<double>>();
+    Eigen::Matrix<double, 4, 4> start_position_eigen(start_position.data());
+
+    QString command = "AbsPose";
+
+    for(int j = 0; j < 16; j++){
+        command+= " ";
+        command+= QString::number(start_position_eigen(j%4,j/4)+0.0000000001);
+    }
+
+    emit tcp_abs_pose(command);
 }

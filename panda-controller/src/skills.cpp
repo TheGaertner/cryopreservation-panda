@@ -77,19 +77,25 @@ void Skills::absPose(Eigen::Matrix<double, 4, 4> goal_pose, double duration)
 
     Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
 
-    Eigen::Matrix<double, 3, 3> goal_rotation = goal_pose.block(0,0,3,3)*Eigen::Quaterniond(0,1,0,0)*Eigen::Quaterniond(0.7071068,0,0,-0.7071068);
+    Eigen::Matrix<double, 3, 3> goal_rotation = goal_pose.block(0,0,3,3); //*Eigen::Quaterniond(0,1,0,0)*Eigen::Quaterniond(0.7071068,0,0,-0.7071068);
     Eigen::Matrix<double, 3, 3> ee_rotation = O_T_EE.block(0,0,3,3);
-    Eigen::Matrix<double, 3, 3> diff_rotation = goal_rotation.inverse()*ee_rotation;
+
+    Eigen::Matrix<double, 3, 3> diff_rotation = ee_rotation.inverse()*goal_rotation; // O_T_EE.inv * O_T_M
 
     Eigen::AngleAxisd angle_axis;
     angle_axis.fromRotationMatrix(diff_rotation);
 
+    Eigen::Vector3d axis = angle_axis.axis();
+    axis = ee_rotation.inverse()*axis;
+
     relPose((goal_pose-O_T_EE)(0,3),
             (goal_pose-O_T_EE)(1,3),
-            (goal_pose-O_T_EE)(2,3)+0.00,
-            -angle_axis.axis()(0)*angle_axis.angle(),
-            angle_axis.axis()(1)*angle_axis.angle(),
-            angle_axis.axis()(2)*angle_axis.angle());
+            (goal_pose-O_T_EE)(2,3),
+            axis(0)*angle_axis.angle(), // -
+            axis(1)*angle_axis.angle(),
+            axis(2)*angle_axis.angle());
+
+
 
 }
 
