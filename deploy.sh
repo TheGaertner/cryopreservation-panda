@@ -7,9 +7,9 @@ yaml() {
     python3 -c "import yaml;print(yaml.load(open('$1'))$2)"
 }
 
-HOSTNAME=$(yaml ${DIRECTORY}/config.yaml "['nuc_hostname']")
-USERNAME=$(yaml ${DIRECTORY}/config.yaml "['ssh_username']")
-PASSWORD=$(yaml ${DIRECTORY}/config.yaml "['ssh_password']")
+HOSTNAME=$(yaml ${DIRECTORY}/config.yaml "['nuc']['hostname']")
+USERNAME=$(yaml ${DIRECTORY}/config.yaml "['nuc']['ssh_username']")
+PASSWORD=$(yaml ${DIRECTORY}/config.yaml "['nuc']['ssh_password']")
 
 
 if [ "$1" != "1" ]

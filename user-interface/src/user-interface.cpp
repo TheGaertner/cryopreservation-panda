@@ -172,12 +172,12 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     ui->graphicsView_2->scene()->addItem(&pixmap_1);
 
     // Set up two videostream
-    ui->lineEdit_7->setText(QString::fromStdString(config["camera_0_port"].as<std::string>()));
-    videostream_0 = new Videostream(config["camera_0_port"].as<int>(),0);
+    ui->lineEdit_7->setText(QString::fromStdString(config["nuc"]["camera_0"]["port"].as<std::string>()));
+    videostream_0 = new Videostream(config["nuc"]["camera_0"]["port"].as<int>(),0);
     videostream_0->start();
 
-    ui->lineEdit_8->setText(QString::fromStdString(config["camera_1_port"].as<std::string>()));
-    videostream_1 = new Videostream(config["camera_1_port"].as<int>(),1);
+    ui->lineEdit_8->setText(QString::fromStdString(config["nuc"]["camera_1"]["port"].as<std::string>()));
+    videostream_1 = new Videostream(config["nuc"]["camera_1"]["port"].as<int>(),1);
     videostream_1->start();
 
     // Connect videostreams to displays
@@ -203,7 +203,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     ui->comboBox_6->setCurrentIndex(0);
 
     // Setup TCP connection
-    std::string input = config["nuc_hostname"].as<std::string>()+":"+config["nuc_tcp_port"].as<std::string>();
+    std::string input = config["nuc"]["hostname"].as<std::string>()+":"+config["nuc"]["tcp_port"].as<std::string>();
     ui->lineEdit_2->setText(QString::fromStdString(input));
     tcp_command = new Tcp_command();
     thread = new QThread;
@@ -219,7 +219,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
 
     // Set up UDP connection for receiving robot states
     socket_udp_ = new QUdpSocket(this);
-    socket_udp_->bind(QHostAddress::AnyIPv4, config["udp_client_port"].as<int>());
+    socket_udp_->bind(QHostAddress::AnyIPv4, config["client"]["udp_port"].as<int>());
     connect(socket_udp_, &QUdpSocket::readyRead, this, &UserInterface::processPendingDatagrams);
 
 
@@ -249,8 +249,8 @@ void UserInterface::on_pushButton_2_clicked()
 
     boost::split(tcp_connection,input, boost::is_any_of(":"));
 
-    config["nuc_hostname"] = tcp_connection[0];
-    config["nuc_tcp_port"] = tcp_connection[1];
+    config["nuc"]["hostname"] = tcp_connection[0];
+    config["nuc"]["tcp_port"] = tcp_connection[1];
 
     ConfigHandler::updateConfig(config);
 
@@ -273,21 +273,23 @@ using json = nlohmann::json;
 
 void UserInterface::on_pushButton_6_clicked()
 {
+    YAML::Node config = ConfigHandler::getConfig("config.yaml");;
     nlohmann::json response;
-    cpp_utils::rpc_call("biolab-017",9001,"lock_brakes",{"192.168.3.101","franka","frankaRSI"},response);
+    cpp_utils::rpc_call(config["nuc"]["hostname"].as<std::string>(),9001,"lock_brakes",{config["robot"]["ip"].as<std::string>(),config["robot"]["desk_username"].as<std::string>(),config["robot"]["desk_password"].as<std::string>()},response);
 }
 
 void UserInterface::on_pushButton_7_clicked()
 {
+    YAML::Node config = ConfigHandler::getConfig("config.yaml");
     nlohmann::json response;
-    cpp_utils::rpc_call("biolab-017",9001,"unlock_brakes",{"192.168.3.101","franka","frankaRSI"},response);
-
+    cpp_utils::rpc_call(config["nuc"]["hostname"].as<std::string>(),9001,"unlock_brakes",{config["robot"]["ip"].as<std::string>(),config["robot"]["desk_username"].as<std::string>(),config["robot"]["desk_password"].as<std::string>()},response);
 }
 
 void UserInterface::on_pushButton_8_clicked()
 {
+    YAML::Node config = ConfigHandler::getConfig("config.yaml");
     nlohmann::json response;
-    cpp_utils::rpc_call("biolab-017",9001,"shutdown",{"192.168.3.101","franka","frankaRSI"},response);
+    cpp_utils::rpc_call(config["nuc"]["hostname"].as<std::string>(),9001,"shutdown",{config["robot"]["ip"].as<std::string>(),config["robot"]["desk_username"].as<std::string>(),config["robot"]["desk_password"].as<std::string>()},response);
 }
 
 void UserInterface::on_lineEdit_returnPressed()

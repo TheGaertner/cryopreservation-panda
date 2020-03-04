@@ -1,14 +1,22 @@
-robot_ip: 192.168.3.101
-nuc_hostname: biolab-017
-ssh_username: panda
-ssh_password: panda
-nuc_tcp_port: 5000
-nuc_udp_port: 4005
-camera_0_name: /dev/video10
-camera_0_port: 6000
-camera_0_on: true
-camera_1_name: /dev/video4
-camera_1_port: 6001
-camera_1_on: true
-client_hostname: student-CELSIUS-W570
-udp_client_port: 4001
+robot:
+  ip: 192.168.3.101
+  desk_username: franka
+  desk_password: frankaRSI
+nuc:
+  hostname: biolab-017
+  ssh_username: panda
+  ssh_password: panda
+  tcp_port: 5000
+  udp_port: 4005
+  camera_0:
+    name: /dev/video10
+    port: 6000
+    on: true
+  camera_1:
+    name: /dev/video4
+    port: 6001
+    on: true
+client:
+  hostname: student-CELSIUS-W570
+  udp_port: 4001
+

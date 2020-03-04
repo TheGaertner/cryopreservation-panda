@@ -1,9 +1,7 @@
 #!/bin/sh -e
 
 # openCV with aruco and gstreamer
-sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev python-dev python-numpy libjpeg-dev libpng-dev
-
-sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev python-dev python-numpy libjpeg-dev libpng-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
 cd
 git clone https://github.com/opencv/opencv.git
