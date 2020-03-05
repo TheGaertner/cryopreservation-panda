@@ -162,7 +162,7 @@ void UserInterface::processPendingDatagrams()
         double sum = std::accumulate(frequency_buffer.begin(), frequency_buffer.end(), 0.0);
         double mean = sum / frequency_buffer.size();
 
-        ui->label_12->setText(QString::number(1/(mean*0.000001)));
+        ui->label_12->setText(QString::number(1/(mean*0.000001)).remove(4,QString::number(1/(mean*0.000001)).length()-4));
 
         // Print robot mode
         QString mode;

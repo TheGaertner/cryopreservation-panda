@@ -55,6 +55,7 @@ private:
         UNUSED(version);
         // Simply list all the fields to be serialized/deserialized.
         ar & state_->O_T_EE;
+        ar & state_->O_T_EE_d;
         ar & state_->q;
         ar & state_->dq_d;
         ar & state_->tau_J;

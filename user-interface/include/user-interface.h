@@ -5,6 +5,7 @@
 #include <QUdpSocket>
 #include <QTcpSocket>
 #include <QTableView>
+#include <QString>
 
 #include <cstdlib>
 
