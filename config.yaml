@@ -17,6 +17,4 @@ nuc:
     port: 6001
     on: true
 client:
-  hostname: parallels-Parallels-Virtual-Platform
   udp_port: 4001
-

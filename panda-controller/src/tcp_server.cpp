@@ -37,7 +37,7 @@ void tcp_connection::start_read()
 
 void tcp_connection::handle_read(const boost::system::error_code& ec, std::size_t nbytes)
 {
-    std::cout << "Received: " << std::string(std::begin(input2),std::begin(input2)+nbytes) << std::endl;
+    //std::cout << "Received: " << std::string(std::begin(input2),std::begin(input2)+nbytes) << std::endl;
     if(task_handler_!=NULL){
         task_handler_->add_task(std::string(std::begin(input2), std::begin(input2)+nbytes));
     }
@@ -73,7 +73,7 @@ void tcp_server::handle_accept(tcp_connection::pointer new_connection, const boo
 
     if (!ec)
     {
-        std::cout << "Connection Accepted" << std::endl;
+        //std::cout << "Connection Accepted" << std::endl;
         new_connection->start();
         start_accept();
     }else{

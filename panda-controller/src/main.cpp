@@ -7,6 +7,9 @@
 
 #include "cpp_utils/network.hpp"
 
+extern franka::Robot robot;
+extern franka::Gripper gripper;
+
 int main(int argc, char *argv[])
 {
     // Load config
@@ -14,11 +17,15 @@ int main(int argc, char *argv[])
     YAML::Node config = ConfigHandler::getConfig();
 
     // Stream webcam data over udp
+    std::vector<std::string> broadcast_adresse_parts = cpp_utils::split_string(cpp_utils::get_ip_by_hostname(config["nuc"]["hostname"].as<std::string>()),".");
+    std::string broadcast_adresse_merged = broadcast_adresse_parts[0]+"."+broadcast_adresse_parts[1]+"."+broadcast_adresse_parts[2]+".255";
+
+
     std::thread camera_thread_0([=](){
         if(config["nuc"]["camera_0"]["on"].as<bool>()){
 
             auto debug = system("chmod +x ../start_camera.sh ");
-            std::string command = "../start_camera.sh '"+ config["nuc"]["camera_0"]["name"].as<std::string>() +"' "+config["client"]["hostname"].as<std::string>()+" "+ config["nuc"]["camera_0"]["port"].as<std::string>() +" >/dev/null";
+            std::string command = "../start_camera.sh '"+ config["nuc"]["camera_0"]["name"].as<std::string>() +"' "+broadcast_adresse_merged+" "+ config["nuc"]["camera_0"]["port"].as<std::string>() +" >/dev/null";
             debug = system(command.c_str());
             std::cout << "Camera 0 started!" << std::endl;
         }
@@ -27,7 +34,7 @@ int main(int argc, char *argv[])
     std::thread camera_thread_1([=](){
         if(config["nuc"]["camera_1"]["on"].as<bool>()){
             auto debug = system("chmod +x ../start_camera.sh ");
-            std::string command = "../start_camera.sh '"+ config["nuc"]["camera_1"]["name"].as<std::string>() +"' "+config["client"]["hostname"].as<std::string>()+" "+ config["nuc"]["camera_1"]["port"].as<std::string>() +" >/dev/null";
+            std::string command = "../start_camera.sh '"+ config["nuc"]["camera_1"]["name"].as<std::string>() +"' "+broadcast_adresse_merged+" "+ config["nuc"]["camera_1"]["port"].as<std::string>() +" >/dev/null";
             debug = system(command.c_str());
             std::cout << "Camera 1 started!" << std::endl;
         }
@@ -42,6 +49,13 @@ int main(int argc, char *argv[])
         ConfigHandler::updateConfig(config);
     }else{
         std::cout << "Robot IP was set to: " << config["robot"]["ip"].as<std::string>() << std::endl;
+    }
+
+
+    if(cpp_utils::ping(config["robot"]["ip"].as<std::string>().c_str())){
+        cpp_utils::print_error("Can't ping robot. Robot IP wrong or robot is shut down.");
+        cpp_utils::print_error("Software will shut down.");
+        return 1;
     }
 
     franka::Robot robot(config["robot"]["ip"].as<std::string>());

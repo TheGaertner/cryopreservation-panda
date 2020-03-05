@@ -9,6 +9,8 @@
 #include <franka/robot.h>
 #include <franka/gripper.h>
 
+#include "cpp_utils/output.hpp"
+
 #include "printer.h"
 #include "utils.h"
 #include "skills.h"
@@ -17,6 +19,7 @@ class task_handler
 {
 public:
     void add_task(std::string name);
+    void clearTaskList();
     void execute_task();
     task_handler(franka::Robot *robot, franka::Gripper *gripper);
 private:

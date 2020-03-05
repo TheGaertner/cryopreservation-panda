@@ -31,6 +31,7 @@ SOURCES += \
     ../panda-controller/src/serialization.cpp \
     ../panda-controller/src/config_handler.cpp \
     external/qcustomplot/qcustomplot.cpp \
+    src/cameracalibration.cpp \
     src/main.cpp \
     src/user-interface.cpp \
     src/marker.cpp \
@@ -45,7 +46,8 @@ HEADERS += \
     include/user-interface.h \
     include/marker.h \
     include/tcp_command.h \
-    include/videostream.h
+    include/videostream.h \
+    src/cameracalibration.h
 
 FORMS += \
     userinterface.ui

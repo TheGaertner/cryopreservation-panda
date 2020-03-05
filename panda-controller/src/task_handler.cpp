@@ -1,9 +1,24 @@
 #include "task_handler.h"
 
+void task_handler::clearTaskList()
+{
+   std::queue<std::string> empty;
+   std::swap( task_list_, empty );
+}
+
 void task_handler::add_task(std::string name)
 {
-    task_list_.push(name);
-    std::cout << "Elements in task_handler: " << task_list_.size() << std::endl;
+    if(name=="StopAll"){
+        robot_->stop();
+        gripper_->stop();
+        clearTaskList();
+
+        std::cout << "Stopped current task and cleared task list" << std::endl;
+    }else{
+        task_list_.push(name);
+//        std::cout << "Added: " +name+ " to task_handler. Elements in list now: " << task_list_.size() << std::endl;
+    }
+
 }
 
 void task_handler::execute_task()
@@ -17,23 +32,28 @@ void task_handler::execute_task()
             std::string name = task_list_.front();
             task_list_.pop();
 
+
             if(name == "AutoErrorRecovery" ){
                 std::cout << "Execute recovery!" << std::endl;
                 skills_->automaticErrorRecovery();
             }
 
             if(name == "GoToInit"){
+                std::cout << "___________________________" << std::endl;
                 std::cout << "Go to initial position!" << std::endl;
                 skills_->goToInitialPositon();
+                std::cout << "Go to initial position finished!" << std::endl;
 
             }
 
             if(name == "TouchR"){
+                std::cout << "___________________________" << std::endl;
                 std::cout << "Swing around z-axis" << std::endl;
 
             }
 
             if(name.find("Gripper")==0){ // Gripper 0.05 0.1, 60
+                std::cout << "___________________________" << std::endl;
                 std::cout << "Start: " << name << std::endl;
                 std::vector<std::string> strs;
                 boost::split(strs, name, boost::is_any_of(" "));
@@ -73,11 +93,11 @@ void task_handler::execute_task()
             }
 
             if(name.find("AbsPose")==0){
-                std::cout << "Start: " << name << std::endl;
-
                 // Create Inputs
                 std::vector<std::string> strs;
                 boost::split(strs, name, boost::is_any_of(" "));
+
+
 
                 Eigen::Matrix<double, 4, 4>goal_pose = Eigen::Array44d::Zero();
 
@@ -85,12 +105,17 @@ void task_handler::execute_task()
                     goal_pose(i%4,i/4) = std::stod(strs[i+1]);
                 }
 
+                std::cout << "___________________________" << std::endl;
+                std::cout << "Start: " << strs[0] << std::endl;
+                std::cout << goal_pose << std::endl;
+
                 skills_->absPose(goal_pose);
 
                 std::cout << "AbsPose finished!"<< std::endl;
             }
 
             if(name.find("RelTurn")== 0){
+                std::cout << "___________________________" << std::endl;
                 std::cout << "Start: " << name << std::endl;
                 std::vector<std::string> strs;
                 boost::split(strs, name, boost::is_any_of(" "));
@@ -107,6 +132,7 @@ void task_handler::execute_task()
 
 
             if(name.find("RelPose")==0){
+                std::cout << "___________________________" << std::endl;
                 std::cout << "Start: " << name << std::endl;
                 std::vector<std::string> strs;
                 boost::split(strs, name, boost::is_any_of(" "));
@@ -137,6 +163,8 @@ void task_handler::execute_task()
 
         if(robot_mode != (int)state.robot_mode){
             robot_mode = (int)state.robot_mode;
+
+
             std::cout << "Current robot mode: " << idToRobotMode(robot_mode) << std::endl;
         }
 
@@ -145,7 +173,7 @@ void task_handler::execute_task()
     }
     catch (std::exception& e)
     {
-        std::cerr << "Error message: " << e.what() << std::endl;
+        cpp_utils::print_warning(e.what());
         std::cerr << "Task cancled" << std::endl;
 
         std::cerr << "Execute Autorecovery" << std::endl;

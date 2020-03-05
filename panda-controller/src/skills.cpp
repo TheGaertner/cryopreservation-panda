@@ -63,7 +63,7 @@ void Skills::relPose(double x, double y, double z, double xx, double yy, double 
         printer_ ->update_state(robot_state);
 
         if (time >= duration/4) {
-            std::cout << std::endl << "Finished motion, shutting down example" << std::endl;
+            std::cout << std::endl << "Finished motion!" << std::endl;
             return franka::MotionFinished(new_pose);
         }
         return new_pose;

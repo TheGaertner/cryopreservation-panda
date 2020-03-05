@@ -12,32 +12,22 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "serialization.h"
-#include "config_handler.h"
-
 #include <Eigen/Dense>
 
 #include <opencv2/core.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/core/eigen.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/aruco/charuco.hpp>
-
-
-#include "opencv2/opencv.hpp"
-
-#include <cpp_utils/network.hpp>
 
 #include <QGraphicsPixmapItem>
 #include <QThread>
 
-#include <videostream.h>
-#include <tcp_command.h>
-#include <marker.h>
+#include "cpp_utils/network.hpp"
+#include "serialization.h"
+#include "config_handler.h"
+#include "cameracalibration.h"
+#include "videostream.h"
+#include "tcp_command.h"
+#include "marker.h"
 
-#include <franka/model.h>
+
 
 
 QT_BEGIN_NAMESPACE
@@ -56,7 +46,7 @@ signals:
     void tcp_autorecovery();
     void go_to_init();
     void tcp_custome_command(QString command);
-    void tcp_abs_pose(QString command);
+    void tcp_adresse_changed(QString adresse);
 
 public:
     UserInterface(QWidget *parent = nullptr, QString  command="");
@@ -70,11 +60,9 @@ public slots:
     void processPendingDatagrams();
     void set_display_0(QPixmap item);
     void set_display_1(QPixmap item);
+    void update_marker_list(std::vector<int> ids);
 
 private slots:
-    void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
 
     void on_pushButton_3_clicked();
 
@@ -96,12 +84,6 @@ private slots:
 
     void on_comboBox_4_activated(const QString &arg1);
 
-    void on_comboBox_5_activated(const QString &arg1);
-
-    void on_comboBox_6_activated(const QString &arg1);
-
-    void on_pushButton_9_clicked();
-
     void on_pushButton_10_clicked();
 
     void on_pushButton_11_clicked();
@@ -110,16 +92,11 @@ private slots:
 
     void on_pushButton_13_clicked();
 
-
-    void on_pushButton_14_clicked();
-
     void on_pushButton_15_clicked();
 
     void on_lineEdit_7_returnPressed();
 
     void on_lineEdit_8_returnPressed();
-
-    void on_lineEdit_2_returnPressed();
 
     void on_pushButton_18_clicked();
 
@@ -133,6 +110,10 @@ private slots:
 
     void on_pushButton_21_clicked();
 
+    void on_lineEdit_2_textChanged(const QString &arg1);
+
+    void on_pushButton_5_clicked();
+
 private:
     Ui::UserInterface *ui;
     QUdpSocket *socket_udp_ = nullptr;
@@ -141,8 +122,8 @@ private:
 
     Videostream *videostream_0;
     Videostream *videostream_1;
-    Tcp_command *tcp_command;
-    QThread* thread;
+    Tcp_command *tcp_command_;
+    QThread* tcp_thread_;
 
     std::chrono::microseconds last_time;
     std::deque <double> frequency_buffer;

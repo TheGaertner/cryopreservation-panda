@@ -8,9 +8,16 @@ void Videostream::stop()
     running_ = false;
 }
 
+void Videostream::go()
+{
+    running_ = true;
+}
+
 void Videostream::set_port(int port)
 {
     port_ =port;
+    port_changed_ = true;
+
 }
 
 Videostream::Videostream(int port, int position){
@@ -32,6 +39,14 @@ void Videostream::run()
 
     running_ = true;
     while(running_) {
+        if(port_changed_){
+            port_changed_ = false;
+            capture = cv::VideoCapture("udpsrc port=" + std::to_string(port_) + " ! application/x-rtp, payload=127 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink sync=false", cv::CAP_GSTREAMER);
+            if (!capture.isOpened()) {
+                //Error
+                qDebug() << "Error while open GStreamer" << endl;
+            }
+        }
 
         // Start time for showing frame rate
         start= std::chrono::duration_cast< std::chrono::microseconds >(
@@ -52,8 +67,7 @@ void Videostream::run()
                         );
             double seconds = ((end.count())+1 - start.count())*0.000001;
             double fps  = 1.0 / seconds;
-            int font = cv::FONT_HERSHEY_SIMPLEX;
-            putText(frame, std::to_string(fps), cv::Point2f(480, 60), font, 1 ,cv::Scalar(0,0,255,255),2,cv::LINE_AA);
+            putText(frame, "FPS: "+std::to_string(fps).substr(0,4), cv::Point2f(80, 60),  cv::FONT_HERSHEY_SIMPLEX, 1.5 ,cv::Scalar(0,0,255,255),3,cv::LINE_AA);
 
             // Adding detected marker
             frame = marker_detector.draw_marker(frame);
@@ -65,6 +79,7 @@ void Videostream::run()
 
             if(position_ == 0){
                 emit sendQPixmap_0(QPixmap::fromImage(small.rgbSwapped()));
+                emit update_marker_ids(marker_detector.get_ids(last_image_));
             }
 
             if(position_ == 1){

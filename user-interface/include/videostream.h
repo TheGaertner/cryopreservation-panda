@@ -22,6 +22,7 @@ class Videostream : public QThread
 public:
     void run();
     void stop();
+    void go();
     void set_port(int port);
 
     Videostream(int port, int position);
@@ -34,9 +35,11 @@ public:
 signals:
     void sendQPixmap_0( QPixmap pixmap);
     void sendQPixmap_1( QPixmap pixmap);
+    void update_marker_ids(std::vector<int>);
 
 private:
     int port_;
+    bool port_changed_ = false;
     int position_;
     bool running_;
     Marker marker_detector;
