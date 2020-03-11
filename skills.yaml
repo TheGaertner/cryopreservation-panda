@@ -1,0 +1,17 @@
+Groups:
+  - Refrigerator
+  - Water Bath
+  - Holder 1
+
+
+Refrigerator:
+  Skills:
+    - Open
+    - Close
+    - Test
+  Open:
+    - AbsPose 0.1 23 12 1
+  Close:
+    - AbsPose 0.1 23 12 1
+  Test:
+    - AbsPose 0.1 23 12 1

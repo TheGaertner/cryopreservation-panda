@@ -27,7 +27,7 @@ void task_handler::execute_task()
     {
 
         if(!task_list_.empty() && (robot_->readOnce().robot_mode != franka::RobotMode::kUserStopped)){
-            setDefaultBehavior(robot_);
+            skills_->setDefaultBehavior();
 
             std::string name = task_list_.front();
             task_list_.pop();
@@ -156,6 +156,23 @@ void task_handler::execute_task()
 
                 std::cout << "RelPose finished!"<< std::endl;
             }
+
+            if(name.find("Push")==0){
+                // Create Inputs
+                std::vector<std::string> strs;
+                boost::split(strs, name, boost::is_any_of(" "));
+
+                Eigen::Vector3d direction(std::stod(strs[1]),std::stod(strs[2]),std::stod(strs[3]));
+                double distance = std::stod(strs[4]);
+
+                std::cout << "___________________________" << std::endl;
+                std::cout << "Start: " << name << std::endl;
+
+                skills_->push(direction,distance);
+
+                std::cout << strs[0]+" finished!"<< std::endl;
+            }
+
         }
 
         franka::RobotState state = robot_->readOnce();

@@ -1,0 +1,8 @@
+Devices:
+  - Refrigerator
+  - Water Bath
+  - Holder 1
+
+Refrigerator:
+  MarkerID: 102
+  MarkerSize: 80

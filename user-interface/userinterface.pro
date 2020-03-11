@@ -31,25 +31,29 @@ SOURCES += \
     ../panda-controller/src/serialization.cpp \
     ../panda-controller/src/config_handler.cpp \
     external/qcustomplot/qcustomplot.cpp \
+    newdevice.cpp \
     src/cameracalibration.cpp \
     src/main.cpp \
+    src/skillhandler.cpp \
     src/user-interface.cpp \
     src/marker.cpp \
     src/tcp_command.cpp \
-    src/videostream.cpp
+    src/videostream.cpp \
 
 
 HEADERS += \
     ../panda-controller/include/serialization.h \
     ../panda-controller/include/config_handler.h \
     external/qcustomplot/qcustomplot.h \
+    include/skillhandler.h \
     include/user-interface.h \
     include/marker.h \
     include/tcp_command.h \
     include/videostream.h \
-    src/cameracalibration.h
+    newdevice.h \ \
 
 FORMS += \
+    newdevice.ui \
     userinterface.ui
 
 INCLUDEPATH += /usr/local/include/opencv4

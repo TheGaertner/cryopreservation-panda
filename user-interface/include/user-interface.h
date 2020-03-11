@@ -6,6 +6,7 @@
 #include <QTcpSocket>
 #include <QTableView>
 #include <QString>
+#include <QListWidgetItem>
 
 #include <cstdlib>
 
@@ -27,6 +28,8 @@
 #include "videostream.h"
 #include "tcp_command.h"
 #include "marker.h"
+#include "newdevice.h"
+#include "skillhandler.h"
 
 
 
@@ -51,6 +54,7 @@ signals:
 
 public:
     UserInterface(QWidget *parent = nullptr, QString  command="");
+    void setEditable(QListWidgetItem*);
 
     QGraphicsPixmapItem pixmap_0;
     QGraphicsPixmapItem pixmap_1;
@@ -115,6 +119,18 @@ private slots:
 
     void on_pushButton_5_clicked();
 
+    void on_pushButton_9_clicked();
+
+    void on_listWidget_3_itemClicked(QListWidgetItem *item);
+
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
+    void on_listWidget_3_itemActivated(QListWidgetItem *item);
+
+    void on_listWidget_3_activated(const QModelIndex &index);
+
 private:
     Ui::UserInterface *ui;
     QUdpSocket *socket_udp_ = nullptr;
@@ -134,6 +150,8 @@ private:
     int save_image_counter_ = 0;
     QString command_;
     Marker marker_;
+    SkillHandler skill_handler_;
+
 
 };
 #endif // USER_INTERFACE_H

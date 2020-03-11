@@ -1,5 +1,68 @@
 #include "skills.h"
 
+void Skills::push(Eigen::Vector3d direction, double distance)
+{
+    Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
+    Eigen::Matrix<double, 3, 3> O_T_EE_rotation = O_T_EE.block(0,0,3,3);
+
+    direction = O_T_EE_rotation.inverse()*direction;
+    direction.normalize();
+    direction = direction*distance;
+
+    setCollisionValue(100);
+    relPose(direction[0],direction[1],direction[2],0,0,0);
+    relPose(-direction[0],-direction[1],-direction[2],0,0,0);
+    setDefaultBehavior();
+}
+
+void Skills::setDefaultBehavior() {
+    joint_collision_ = 20;
+    joint_contact_ = 7;
+    cartesian_collision_ = 20;
+    cartesian_contact_ = 7;
+
+    updateCollisionContactValue();
+
+    robot_->setJointImpedance({{3000, 3000, 3000, 2500, 2500, 2000, 2000}});
+    robot_->setCartesianImpedance({{3000, 3000, 300, 300, 300, 300}});
+}
+
+void Skills::updateCollisionContactValue()
+{
+    std::array<double, 7>joint_collision;
+    joint_collision.fill(joint_collision_);
+    std::array<double, 7>joint_contact;
+    joint_contact.fill(joint_contact_);
+
+    std::array<double, 6>cartesian_collision;
+    cartesian_collision.fill(cartesian_collision_);
+    std::array<double, 6>cartesian_contact;
+    cartesian_contact.fill(cartesian_contact_);
+
+    robot_->setCollisionBehavior(
+                joint_contact, joint_collision,
+                joint_contact, joint_collision,
+                cartesian_contact, cartesian_collision,
+                cartesian_contact, cartesian_collision);
+}
+
+void Skills::setCollisionValue(int value)
+{
+    joint_collision_ = value;
+    cartesian_collision_ = value;
+
+    updateCollisionContactValue();
+}
+
+void Skills::setContactValue(int value)
+{
+    joint_contact_ = value;
+    cartesian_contact_ = value;
+
+    updateCollisionContactValue();
+}
+
+
 void Skills::automaticErrorRecovery()
 {
     robot_->automaticErrorRecovery();
@@ -7,7 +70,7 @@ void Skills::automaticErrorRecovery()
 
 void Skills::goToInitialPositon()
 {
-    setDefaultBehavior(robot_);
+    setDefaultBehavior();
     std::array<double, 7> q_goal = {{0, -M_PI_4, 0, -3 * M_PI_4,0, M_PI_2, M_PI_4}};
     MotionGenerator motion_generator(0.5, q_goal);
     robot_->control(motion_generator);

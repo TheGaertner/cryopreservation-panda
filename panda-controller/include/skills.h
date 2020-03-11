@@ -14,6 +14,11 @@
 class Skills
 {
 public:
+    void push(Eigen::Vector3d direction, double distance);
+    void setCollisionValue(int value);
+    void setContactValue(int value);
+    void updateCollisionContactValue();
+    void setDefaultBehavior();
     void automaticErrorRecovery();
     void goToInitialPositon();
     void touchR();
@@ -26,6 +31,11 @@ private:
     franka::Robot *robot_;
     franka::Gripper *gripper_;
     Printer *printer_;
+
+    int joint_contact_;
+    int joint_collision_;
+    int cartesian_contact_;
+    int cartesian_collision_;
 };
 
 #endif // SKILLS_H

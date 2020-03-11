@@ -9,12 +9,12 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     , last_time(std::chrono::duration_cast< std::chrono::microseconds >(
                     std::chrono::system_clock::now().time_since_epoch()))
     , marker_(&last_state_)
+    , skill_handler_()
 {
 
     ui->setupUi(this);
 
     // Loading YAML config
-    ConfigHandler::setConfig(command.toStdString(),true);
     YAML::Node config = ConfigHandler::getConfig();
 
     // Set up plot in gui
@@ -80,7 +80,39 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(socket_udp_, &QUdpSocket::readyRead, this, &UserInterface::processPendingDatagrams);
 
 
+
+    // Setup teaching
+    ConfigHandler::setConfig(command.toStdString(),true);
+    YAML::Node devices_dict = ConfigHandler::getConfig("devices.yaml");
+
+    std::vector<std::string> devices = devices_dict["Devices"].as<std::vector<std::string>>();
+    ui->listWidget_3->clear();
+
+    for(auto& element : devices){
+        new QListWidgetItem(QString::fromStdString(element), ui->listWidget_3);
+    }
+
+
+    connect(ui->pushButton,&QPushButton::clicked,&skill_handler_,&SkillHandler::addGroup);
+    connect(ui->pushButton_2,&QPushButton::clicked,&skill_handler_,&SkillHandler::removeGroup);
+    connect(ui->listWidget_3,&QListWidget::itemClicked,&skill_handler_,&SkillHandler::setSelectedGroup);
+
+    connect(&skill_handler_,&SkillHandler::clearGroupWidget, ui->listWidget_3,&QListWidget::clear);
+    connect(&skill_handler_,&SkillHandler::addGroupToWidget, ui->listWidget_3,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+
+    connect(ui->pushButton_24,&QPushButton::clicked,&skill_handler_,&SkillHandler::moveGroupUp);
+
+    connect(&skill_handler_,&SkillHandler::setGroupRow, ui->listWidget_3,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
+
+
+
+
 }
+
+void UserInterface::setEditable(QListWidgetItem* item){
+    item->setFlags(item->flags() | Qt :: ItemIsEditable);
+}
+
 
 UserInterface::~UserInterface()
 {
@@ -560,4 +592,41 @@ void UserInterface::on_pushButton_17_clicked()
 
     config["Absolut Pose"][ui->lineEdit_6->text().toStdString()] =vec;
     ConfigHandler::updateConfig(config,"poses.yaml");
+}
+
+#include <franka/model.h>
+
+void UserInterface::on_pushButton_9_clicked()
+{
+    qDebug() << ui->listWidget_3->item(0)->flags() << endl;
+}
+
+void UserInterface::on_listWidget_3_itemClicked(QListWidgetItem *item)
+{
+
+}
+
+void UserInterface::on_pushButton_clicked()
+{
+    NewDevice new_device;
+    // connect(&new_device,SLOT(device_created),this,test);
+
+//    new QListWidgetItem(QString::fromStdString("New Group"), ui->listWidget_3);
+
+}
+
+void UserInterface::on_pushButton_2_clicked()
+{
+    qDeleteAll(ui->listWidget_3->selectedItems());
+//    ui->listWidget_3->removeItemWidget(ui->listWidget_3->currentItem());
+}
+
+void UserInterface::on_listWidget_3_itemActivated(QListWidgetItem *item)
+{
+    qDebug() << item->text() << endl;
+}
+
+void UserInterface::on_listWidget_3_activated(const QModelIndex &index)
+{
+    qDebug() << index.row() << endl;
 }

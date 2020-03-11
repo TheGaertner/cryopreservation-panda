@@ -1,5 +1,6 @@
 #include <franka/robot.h>
 #include <franka/gripper.h>
+#include <franka/model.h>
 
 #include "task_handler.h"
 #include "tcp_server.h"
@@ -70,7 +71,6 @@ int main(int argc, char *argv[])
     boost::asio::io_service io_service;
     tcp_server tcp_server(io_service,config["nuc"]["tcp_port"].as<int>(),&task_handler);
     std::thread th([&] { io_service.run(); });
-
 
     // Wait for incoming commands
     while(true){
