@@ -5,6 +5,7 @@
 #include <functional>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 #include <franka/robot.h>
 #include <franka/gripper.h>

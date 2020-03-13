@@ -2,8 +2,8 @@
 
 void task_handler::clearTaskList()
 {
-   std::queue<std::string> empty;
-   std::swap( task_list_, empty );
+    std::queue<std::string> empty;
+    std::swap( task_list_, empty );
 }
 
 void task_handler::add_task(std::string name)
@@ -15,8 +15,9 @@ void task_handler::add_task(std::string name)
 
         std::cout << "Stopped current task and cleared task list" << std::endl;
     }else{
+        boost::replace_all(name, ",", ".");
         task_list_.push(name);
-//        std::cout << "Added: " +name+ " to task_handler. Elements in list now: " << task_list_.size() << std::endl;
+        std::cout << "Added: " +name+ " to task_handler. Elements in list now: " << task_list_.size() << std::endl;
     }
 
 }
@@ -27,15 +28,32 @@ void task_handler::execute_task()
     {
 
         if(!task_list_.empty() && (robot_->readOnce().robot_mode != franka::RobotMode::kUserStopped)){
-            skills_->setDefaultBehavior();
+
 
             std::string name = task_list_.front();
             task_list_.pop();
 
+            if(name == "SetDefaulBehavior" ){
+                std::cout << "SetDefaulBehavior!" << std::endl;
+                skills_->setDefaultBehavior();
+            }
 
             if(name == "AutoErrorRecovery" ){
                 std::cout << "Execute recovery!" << std::endl;
                 skills_->automaticErrorRecovery();
+            }
+
+            if(name.find("SetColConBehaviour")== 0){
+                std::cout << "___________________________" << std::endl;
+                std::cout << "Start: " + name << std::endl;
+
+                std::vector<std::string> strs;
+                boost::split(strs, name, boost::is_any_of(" "));
+
+                skills_->setCollisionValue( std::stod(strs[1]));
+                skills_->setContactValue( std::stod(strs[2]));
+
+                std::cout << "Contact and Collision Force updated to:  Collison: " +std::to_string(std::stod(strs[1]))+"N and Contact: " +std::to_string(std::stod(strs[2]))+ "N"  << std::endl;
             }
 
             if(name == "GoToInit"){
@@ -43,7 +61,16 @@ void task_handler::execute_task()
                 std::cout << "Go to initial position!" << std::endl;
                 skills_->goToInitialPositon();
                 std::cout << "Go to initial position finished!" << std::endl;
+            }
 
+            if(name.find("JointPose")== 0){
+                std::cout << "___________________________" << std::endl;
+                std::cout << name << std::endl;
+                std::vector<std::string> strs;
+                boost::split(strs, name, boost::is_any_of(" "));
+
+                skills_->joint_pose(std::stod(strs[1]),std::stod(strs[2]),std::stod(strs[3]),std::stod(strs[4]),std::stod(strs[5]),std::stod(strs[6]),std::stod(strs[7]),std::stod(strs[8]));
+                std::cout << "Go to joint position finished!" << std::endl;
             }
 
             if(name == "TouchR"){
@@ -58,38 +85,33 @@ void task_handler::execute_task()
                 std::vector<std::string> strs;
                 boost::split(strs, name, boost::is_any_of(" "));
 
-                double grasping_width;
-                double speed;
-                double force;
-                if(strs.size()>1){
-                    grasping_width = std::stod(strs[1]);
-                    speed = std::stod(strs[2]);
-                    force = std::stod(strs[3]);
-                }
 
-                switch (strs.size()) {
-                case 1:
-                {
+
+                if(name.find("Gripper Homing")==0)  {
                     gripper_->homing();
                     franka::GripperState gripper_state = gripper_->readOnce();
                     std::cout << "Gripper width: " << gripper_state.max_width << std::endl;
-                    break;
-                }
-                case 5:
-                {
-                    gripper_->homing();
-                    franka::GripperState gripper_state = gripper_->readOnce();
-                    if (gripper_state.max_width < grasping_width) {
-                        std::cout << "Object is too large for the current fingers on the gripper." << std::endl;
-                        break;
-                    };
-                }
-                default:
-                    if (!gripper_->grasp(grasping_width, speed, force,0.01,0.01)) {
+                }else{
+                    double grasping_width;
+                    double speed;
+                    double force;
+                    double tolerance;
+                    if(strs.size()>1){
+                        grasping_width = std::stod(strs[1]);
+                        speed = std::stod(strs[2]);
+                        force = std::stod(strs[3]);
+                        tolerance = std::stod(strs[4]);
+                    }
+
+
+                    if (!gripper_->grasp(grasping_width, speed, force,tolerance,tolerance)) {
                         std::cout << "Failed to grasp object." << std::endl;
+                    }else{
+                        std::cout << "Object grasped!" << std::endl;
                     }
 
                 }
+                std::cout << "Gripping finished!" << std::endl;
             }
 
             if(name.find("AbsPose")==0){
@@ -131,19 +153,27 @@ void task_handler::execute_task()
             }
 
 
-            if(name.find("RelPose")==0){
+            if(name.find("RelPose")==0 ){
                 std::cout << "___________________________" << std::endl;
                 std::cout << "Start: " << name << std::endl;
+                std::cout.flush();
                 std::vector<std::string> strs;
                 boost::split(strs, name, boost::is_any_of(" "));
+
                 double time = 0;
                 double duration = 15;
                 double target_x = std::stod(strs[1]);
                 double target_y = std::stod(strs[2]);
                 double target_z = std::stod(strs[3]);
+
                 double target_xx = 0;
                 double target_yy = 0;
                 double target_zz = 0;
+
+                bool EE_frame = false;
+                if (strs.size()==9){
+                    EE_frame = true;
+                }
 
                 if(strs.size()>4){
                     target_xx = std::stod(strs[4]);
@@ -152,7 +182,7 @@ void task_handler::execute_task()
 
                 }
 
-                skills_->relPose(target_x,target_y,target_z,target_xx,target_yy,target_zz,duration);
+                skills_->relPose(target_x,target_y,target_z,target_xx,target_yy,target_zz,duration,EE_frame);
 
                 std::cout << "RelPose finished!"<< std::endl;
             }
@@ -205,4 +235,5 @@ task_handler::task_handler(franka::Robot *robot, franka::Gripper *gripper):robot
 {
     printer_ = new Printer();
     skills_ = new Skills(robot,gripper,printer_);
+    task_list_.push("SetDefaulBehavior");
 }

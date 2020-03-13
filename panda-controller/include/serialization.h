@@ -45,6 +45,9 @@ public:
     double getData(std::string name, int id = 99);
     static std::vector<std::string> getNames();
 
+    std::string sender_ip;
+    int sender_port;
+
 private:
     bool delete_state_ = false;
 

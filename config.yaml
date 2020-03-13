@@ -9,11 +9,11 @@ nuc:
   tcp_port: 5000
   udp_port: 4005
   camera_0:
-    name: /dev/video4
+    name: /dev/video10
     port: 6000
     on: true
   camera_1:
-    name: /dev/video10
+    name: /dev/video4
     port: 6001
     on: true
 client:

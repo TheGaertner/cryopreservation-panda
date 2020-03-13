@@ -9,7 +9,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     , last_time(std::chrono::duration_cast< std::chrono::microseconds >(
                     std::chrono::system_clock::now().time_since_epoch()))
     , marker_(&last_state_)
-    , skill_handler_()
+    , skill_handler_interface_()
 {
 
     ui->setupUi(this);
@@ -37,8 +37,8 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     videostream_1->start();
 
     // Connect videostreams to displays
-    connect(videostream_0,&Videostream::sendQPixmap_0,this,&UserInterface::set_display_0);
-    connect(videostream_1,&Videostream::sendQPixmap_1,this,&UserInterface::set_display_1);
+    connect(videostream_0,&Videostream::sendQPixmap_0,this,[=]( QPixmap item) { pixmap_0.setPixmap(item);});
+    connect(videostream_1,&Videostream::sendQPixmap_1,this,[=]( QPixmap item) { pixmap_1.setPixmap(item);});
 
     // Update detected marker
     qRegisterMetaType<std::vector<int> >("std::vector<int>");
@@ -50,12 +50,6 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
         ui->comboBox_3->addItem(QString::fromStdString(name));
         ui->comboBox_4->addItem(QString::fromStdString(name));;
     }
-
-
-    // tbd - Setting initial values for comboboxes
-    ui->comboBox_3->setCurrentIndex(0);
-    ui->comboBox_4->setCurrentIndex(21);
-    on_comboBox_4_activated("q");
 
     // Setup TCP connection
     std::string input = config["nuc"]["hostname"].as<std::string>()+":"+config["nuc"]["tcp_port"].as<std::string>();
@@ -73,44 +67,117 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(this,SIGNAL(tcp_adresse_changed(QString)),tcp_command_,SLOT(new_adresse(QString)));
     emit tcp_adresse_changed(ui->lineEdit_2->text());
 
+    connect(ui->pushButton_4,&QPushButton::clicked,tcp_command_,[=]() { tcp_command_->write_command("GoToInit");});
+    connect(ui->pushButton_5,&QPushButton::clicked,tcp_command_,[=]() { tcp_command_->write_command("StopAll");});
+    connect(ui->pushButton_3,&QPushButton::clicked,tcp_command_,[=]() { tcp_command_->write_command(ui->lineEdit->displayText());});
+    connect(ui->lineEdit,&QLineEdit::returnPressed,tcp_command_,[=]() { tcp_command_->write_command(ui->lineEdit->displayText());});
 
     // Set up UDP connection for receiving robot states
     socket_udp_ = new QUdpSocket(this);
     socket_udp_->bind(QHostAddress::AnyIPv4, config["client"]["udp_port"].as<int>());
-    connect(socket_udp_, &QUdpSocket::readyRead, this, &UserInterface::processPendingDatagrams);
+    connect(socket_udp_, &QUdpSocket::readyRead, this, &UserInterface::processPendingUDPDatagrams);
+
+    // Update Statusbar
+    connect(this,&UserInterface::current_robot_state,this,&UserInterface::update_statusbar);
+
+    // Update Matrix
+    connect(ui->comboBox_3 , static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::activated), this ,[&](QString arg1) { updateTabelWidget(ui->tableWidget,arg1);});
+    connect(ui->comboBox_4 , static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::activated), this ,[&](QString arg1) { updateTabelWidget(ui->tableWidget_2,arg1);});
+
+    ui->comboBox_3->setCurrentIndex(0);
+    ui->comboBox_4->setCurrentText("q");
+    emit ui->comboBox_4->activated("q");
+    connect(this,&UserInterface::current_robot_state,this,&UserInterface::update_tablewidgets);
+
+    // Update Plot
+    connect(this,&UserInterface::current_robot_state,this,&UserInterface::update_plot);
+
+    // Group Widget
+    connect(ui->lineEdit_13,&QLineEdit::textChanged,&skill_handler_interface_,&SkillHandlerInterface::setNewGroupName);
+    connect(ui->pushButton,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::addGroup);
+    connect(ui->pushButton_2,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::removeGroup);
+    connect(ui->listWidget_3,&QListWidget::itemClicked,&skill_handler_interface_,&SkillHandlerInterface::setSelectedGroup);
+    connect(ui->listWidget_3,&QListWidget::itemClicked,&skill_handler_interface_,&SkillHandlerInterface::openSkills);
 
 
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearGroupWidget, ui->listWidget_3,&QListWidget::clear);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addGroupToWidget, ui->listWidget_3,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(&skill_handler_interface_,&SkillHandlerInterface::setGroupRow, ui->listWidget_3,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
 
-    // Setup teaching
-    ConfigHandler::setConfig(command.toStdString(),true);
-    YAML::Node devices_dict = ConfigHandler::getConfig("devices.yaml");
+    // Skill Widget
+    connect(ui->lineEdit_11,&QLineEdit::textChanged,&skill_handler_interface_,&SkillHandlerInterface::setNewSkillName);
+    connect(ui->pushButton_14,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::addSkill);
+    connect(ui->pushButton_22,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::removeSkill);
+    connect(ui->listWidget_4,&QListWidget::itemClicked,&skill_handler_interface_,&SkillHandlerInterface::setSelectedSkill);
+    connect(ui->listWidget_4,&QListWidget::itemClicked,&skill_handler_interface_,&SkillHandlerInterface::openSequence);
 
-    std::vector<std::string> devices = devices_dict["Devices"].as<std::vector<std::string>>();
-    ui->listWidget_3->clear();
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearSkillWidget, ui->listWidget_4,&QListWidget::clear);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addSkillToWidget, ui->listWidget_4,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(&skill_handler_interface_,&SkillHandlerInterface::setSkillRow, ui->listWidget_4,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
 
-    for(auto& element : devices){
-        new QListWidgetItem(QString::fromStdString(element), ui->listWidget_3);
-    }
+    // Sequence Widget
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearSequenceElementWidget, ui->listWidget_2,&QListWidget::clear);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addSequenceElementToWidget, ui->listWidget_2,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(&skill_handler_interface_,&SkillHandlerInterface::setSequenceElementRow, ui->listWidget_2,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
+    connect(ui->listWidget_2,&QListWidget::itemClicked,&skill_handler_interface_,&SkillHandlerInterface::setSelectedSequenceElement);
+    connect(ui->pushButton_23,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::removeSequenceElement);
+    connect(ui->pushButton_25,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::moveSequenceElementUp);
+    connect(ui->pushButton_24,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::moveSequenceElementDown);
 
-
-    connect(ui->pushButton,&QPushButton::clicked,&skill_handler_,&SkillHandler::addGroup);
-    connect(ui->pushButton_2,&QPushButton::clicked,&skill_handler_,&SkillHandler::removeGroup);
-    connect(ui->listWidget_3,&QListWidget::itemClicked,&skill_handler_,&SkillHandler::setSelectedGroup);
-
-    connect(&skill_handler_,&SkillHandler::clearGroupWidget, ui->listWidget_3,&QListWidget::clear);
-    connect(&skill_handler_,&SkillHandler::addGroupToWidget, ui->listWidget_3,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
-
-    connect(ui->pushButton_24,&QPushButton::clicked,&skill_handler_,&SkillHandler::moveGroupUp);
-
-    connect(&skill_handler_,&SkillHandler::setGroupRow, ui->listWidget_3,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
-
-
+    connect(ui->pushButton_34,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::playSequence);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::command,tcp_command_,[=](QString command) { tcp_command_->write_command(command);});
 
 
-}
+    // Primitives
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addMovementPrimitiveToWidget, ui->comboBox_5,static_cast<void (QComboBox::*)(const QStringList&)>(&QComboBox::addItems));
+    connect(this,&UserInterface::current_robot_state,&skill_handler_interface_, &SkillHandlerInterface::setLastState);
 
-void UserInterface::setEditable(QListWidgetItem* item){
-    item->setFlags(item->flags() | Qt :: ItemIsEditable);
+
+    // Relative Pose
+    connect(ui->listWidget_6,&QListWidget::itemClicked,this,[=](QListWidgetItem *item) {ui->label_52->setText(item->text());});
+    connect(ui->listWidget_6,&QListWidget::itemClicked,&skill_handler_interface_, &SkillHandlerInterface::setActualMarker);
+    connect(ui->pushButton_29,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::savePose);
+    connect(ui->lineEdit_26,&QLineEdit::textChanged,&skill_handler_interface_,&SkillHandlerInterface::saveDuration);
+
+    connect(ui->pushButton_30,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::createRelativePose);
+
+    // Joint Pose
+    connect(ui->pushButton_31,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::savePose);
+    connect(ui->lineEdit_27,&QLineEdit::textChanged,&skill_handler_interface_,&SkillHandlerInterface::saveDuration);
+    connect(ui->pushButton_32,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::createJointPosition);
+
+
+   // Relative Movement
+    connect(ui->pushButton_37,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.createRelMovement(ui->lineEdit_29->text().toDouble(),
+                                                                                                                                 ui->lineEdit_30->text().toDouble(),
+                                                                                                                                 ui->lineEdit_31->text().toDouble(),
+                                                                                                                                 ui->lineEdit_32->text().toDouble(),
+                                                                                                                                 ui->lineEdit_33->text().toDouble(),
+                                                                                                                                 ui->lineEdit_34->text().toDouble(),
+                                                                                                                                 ui->lineEdit_28->text().toDouble(),
+                                                                                                                                 ui->radioButton_4->isChecked());});
+
+    // Gripper
+    connect(ui->pushButton_39,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.gripper_action(ui->lineEdit_35->text().toDouble(),
+                                                                                                                              ui->lineEdit_36->text().toDouble(),
+                                                                                                                              ui->lineEdit_37->text().toDouble(),
+                                                                                                                              ui->lineEdit_38->text().toDouble());});
+
+    connect(ui->pushButton_40,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.gripper_homing();});
+
+    // Contact Collision Behaviour
+    connect(ui->pushButton_48,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_colcon_behaviour(ui->lineEdit_53->text().toDouble(),
+                                                                                                                                    ui->lineEdit_58->text().toDouble());});
+
+
+    skill_handler_interface_.init();
+
+    // Calibration
+    connect(ui->pushButton_10,&QPushButton::clicked,CameraCalibration::create_board);
+    connect(ui->pushButton_12,&QPushButton::clicked,[=]() {CameraCalibration::save_photo(videostream_0->last_image_);});
+    connect(ui->pushButton_13,&QPushButton::clicked,CameraCalibration::calibrate_camera);
+    connect(ui->pushButton_11,&QPushButton::clicked,[&]() {Marker::create_aruco_marker(ui->lineEdit_3->text().toInt());});
+
 }
 
 
@@ -119,34 +186,9 @@ UserInterface::~UserInterface()
     delete ui;
 }
 
-// Set tablewidget based on chosen name in droplist and update valuesin tablewidget
-void setTableWidgetContent(QTableWidget* pointer, QString name, StateSerialization* state2){
-    double number = state2->getData(name.toStdString());
-    QString text;
-    for(int i = 0; i <number; i++)
-    {
-        if(number == 16){
-            if(pointer->item(i%4,i/4) == nullptr){
-                pointer->setItem(i%4,i/4,new QTableWidgetItem("Test"));
-            }
-
-            pointer->item(i%4,i/4)->setTextAlignment(Qt::AlignRight);
-            pointer->item(i%4,i/4)->setText(text.sprintf("%.2f", state2->getData(name.toStdString(),i)));
-        }else{
-            if(pointer->item(i,0) == nullptr){
-                pointer->setItem(i,0,new QTableWidgetItem("Test"));
-            }
-
-            pointer->item(i,0)->setTextAlignment(Qt::AlignRight);
-            pointer->item(i,0)->setText(text.sprintf("%.2f", state2->getData(name.toStdString(),i)));
 
 
-        }
-
-    }
-}
-
-void UserInterface::processPendingDatagrams()
+void UserInterface::processPendingUDPDatagrams()
 {
     QHostAddress sender;
     u_int16_t port;
@@ -171,88 +213,12 @@ void UserInterface::processPendingDatagrams()
             in_archive >> last_state_;
         }
 
-        //// Show Information ////
+        last_state_.sender_ip = sender.toString().toStdString();
+        last_state_.sender_port = port;
 
-        // Print sender adresse
-        ui->label_3->setText(sender.toString()+" : "+QString::number(port));
+        emit current_robot_state(&last_state_);
 
-        // Print sent time
-        ui->label_4->setText(std::asctime(std::localtime(&last_state_.current_time)));
-
-        // Calculate and show frequency
-        double duration = std::chrono::duration_cast< std::chrono::microseconds >(
-                    std::chrono::system_clock::now().time_since_epoch()
-                    ).count()+1 - last_time.count();
-
-        last_time = std::chrono::duration_cast< std::chrono::microseconds >(
-                    std::chrono::system_clock::now().time_since_epoch());
-
-        frequency_buffer.push_back(duration);
-        if(frequency_buffer.size()>4000){
-            frequency_buffer.pop_front();
-        }
-        double sum = std::accumulate(frequency_buffer.begin(), frequency_buffer.end(), 0.0);
-        double mean = sum / frequency_buffer.size();
-
-        ui->label_12->setText(QString::number(1/(mean*0.000001)).remove(4,QString::number(1/(mean*0.000001)).length()-4));
-
-        // Print robot mode
-        QString mode;
-        switch(last_state_.robot_mode_converted){
-        case 0:
-            mode="Other";
-            break;
-        case 1:
-            mode="Idle";
-            break;
-        case 2:
-            mode="Move";
-            break;
-        case 3:
-            mode="Guiding";
-            break;
-        case 4:
-            mode="Reflex";
-            break;
-        case 5:
-            mode="UserStopped";
-            break;
-        case 6:
-            mode="AutomaticErrorRecovery";
-            break;
-        default:
-            mode="No mode?";
-        }
-        ui->label_14->setText(mode);
-
-        // Print matrixes
-        setTableWidgetContent(ui->tableWidget,ui->comboBox_3->currentText(),&last_state_);
-        setTableWidgetContent(ui->tableWidget_2,ui->comboBox_4->currentText(),&last_state_);
-
-        // Update plot
-        graph_buffer_y.push_back(last_state_.getData(ui->comboBox->currentText().toStdString(),ui->comboBox_2->currentIndex()));
-        graph_buffer_x.push_back(counter++);
-        if(graph_buffer_y.size()>5000){
-            graph_buffer_y.pop_front();
-            graph_buffer_x.pop_front();
-        }
-        ui->widget->graph(0)->setData(graph_buffer_x,graph_buffer_y);
-        ui->widget->yAxis->setRange(*std::min_element(graph_buffer_y.constBegin(), graph_buffer_y.constEnd()), *std::max_element(graph_buffer_y.constBegin(), graph_buffer_y.constEnd()));
-        ui->widget->xAxis->setRange(*std::min_element(graph_buffer_x.constBegin(), graph_buffer_x.constEnd()), *std::max_element(graph_buffer_x.constBegin(), graph_buffer_x.constEnd()));
-        ui->widget->replot();
     }
-}
-
-// Update left camera
-void UserInterface::set_display_0(QPixmap item)
-{
-    pixmap_0.setPixmap(item);
-}
-
-// Update right camera
-void UserInterface::set_display_1(QPixmap item)
-{
-    pixmap_1.setPixmap(item);
 }
 
 // set left camera
@@ -286,10 +252,116 @@ void UserInterface::on_lineEdit_8_returnPressed()
 void UserInterface::update_marker_list(std::vector<int> ids)
 {
     ui->listWidget->clear();
+    ui->listWidget_6->clear();
 
     for(auto& element : ids){
         new QListWidgetItem(QString::number(element), ui->listWidget);
+        new QListWidgetItem(QString::number(element), ui->listWidget_6);
     }
+}
+
+void UserInterface::update_statusbar(StateSerialization *state)
+{
+    //// Show Information ////
+
+    // Print sender adresse
+    ui->label_3->setText(QString::fromStdString(state->sender_ip)+" : "+QString::number(state->sender_port));
+
+    // Print sent time
+    ui->label_4->setText(std::asctime(std::localtime(&state->current_time)));
+
+    // Calculate and show frequency
+    double duration = std::chrono::duration_cast< std::chrono::microseconds >(
+                std::chrono::system_clock::now().time_since_epoch()
+                ).count()+1 - last_time.count();
+
+    last_time = std::chrono::duration_cast< std::chrono::microseconds >(
+                std::chrono::system_clock::now().time_since_epoch());
+
+    frequency_buffer.push_back(duration);
+    if(frequency_buffer.size()>4000){
+        frequency_buffer.pop_front();
+    }
+    double sum = std::accumulate(frequency_buffer.begin(), frequency_buffer.end(), 0.0);
+    double mean = sum / frequency_buffer.size();
+
+    ui->label_12->setText(QString::number(1/(mean*0.000001)).remove(4,QString::number(1/(mean*0.000001)).length()-4));
+
+    // Print robot mode
+    QString mode;
+    switch(state->robot_mode_converted){
+    case 0:
+        mode="Other";
+        break;
+    case 1:
+        mode="Idle";
+        break;
+    case 2:
+        mode="Move";
+        break;
+    case 3:
+        mode="Guiding";
+        break;
+    case 4:
+        mode="Reflex";
+        break;
+    case 5:
+        mode="UserStopped";
+        break;
+    case 6:
+        mode="AutomaticErrorRecovery";
+        break;
+    default:
+        mode="No mode?";
+    }
+    ui->label_14->setText(mode);
+
+}
+
+// Set tablewidget based on chosen name in droplist and update valuesin tablewidget
+void setTableWidgetContent(QTableWidget* pointer, QString name, StateSerialization* state2){
+    double number = state2->getData(name.toStdString());
+    QString text;
+    for(int i = 0; i <number; i++)
+    {
+        if(number == 16){
+            if(pointer->item(i%4,i/4) == nullptr){
+                pointer->setItem(i%4,i/4,new QTableWidgetItem("Test"));
+            }
+
+            pointer->item(i%4,i/4)->setTextAlignment(Qt::AlignRight);
+            pointer->item(i%4,i/4)->setText(text.sprintf("%.2f", state2->getData(name.toStdString(),i)));
+        }else{
+            if(pointer->item(i,0) == nullptr){
+                pointer->setItem(i,0,new QTableWidgetItem("Test"));
+            }
+
+            pointer->item(i,0)->setTextAlignment(Qt::AlignRight);
+            pointer->item(i,0)->setText(text.sprintf("%.2f", state2->getData(name.toStdString(),i)));
+        }
+    }
+}
+
+void UserInterface::update_tablewidgets(StateSerialization *state)
+{
+    // Print matrixes
+    setTableWidgetContent(ui->tableWidget,ui->comboBox_3->currentText(),state);
+    setTableWidgetContent(ui->tableWidget_2,ui->comboBox_4->currentText(),state);
+}
+
+void UserInterface::update_plot(StateSerialization *state)
+{
+    // Update plot
+    graph_buffer_y.push_back(state->getData(ui->comboBox->currentText().toStdString(),ui->comboBox_2->currentIndex()));
+    graph_buffer_x.push_back(counter++);
+    if(graph_buffer_y.size()>5000){
+        graph_buffer_y.pop_front();
+        graph_buffer_x.pop_front();
+    }
+    ui->widget->graph(0)->setData(graph_buffer_x,graph_buffer_y);
+    ui->widget->yAxis->setRange(*std::min_element(graph_buffer_y.constBegin(), graph_buffer_y.constEnd()), *std::max_element(graph_buffer_y.constBegin(), graph_buffer_y.constEnd()));
+    ui->widget->xAxis->setRange(*std::min_element(graph_buffer_x.constBegin(), graph_buffer_x.constEnd()), *std::max_element(graph_buffer_x.constBegin(), graph_buffer_x.constEnd()));
+    ui->widget->replot();
 }
 
 // TCP Commands
@@ -308,27 +380,7 @@ void UserInterface::on_lineEdit_2_textChanged(const QString &arg1)
     emit tcp_adresse_changed(arg1);
 }
 
-void UserInterface::on_pushButton_4_clicked()
-{
-    emit tcp_custome_command("GoToInit");
-}
 
-// Stop all commands
-void UserInterface::on_pushButton_5_clicked()
-{
-    emit tcp_custome_command("StopAll");
-}
-
-void UserInterface::on_lineEdit_returnPressed()
-{
-    on_pushButton_3_clicked();
-}
-
-
-void UserInterface::on_pushButton_3_clicked()
-{
-    emit tcp_custome_command(ui->lineEdit->displayText());
-}
 
 // go to marker by id
 void UserInterface::on_pushButton_18_clicked()
@@ -396,7 +448,7 @@ void UserInterface::on_pushButton_8_clicked()
 }
 
 // set up matrices
-void updateTabelWidget(QTableWidget* pointer, QString name){
+void UserInterface::updateTabelWidget(QTableWidget* pointer, QString name){
     StateSerialization forNumbers;
     double numbers = forNumbers.getData(name.toStdString());
 
@@ -411,15 +463,7 @@ void updateTabelWidget(QTableWidget* pointer, QString name){
 
 
 
-void UserInterface::on_comboBox_3_activated(const QString &arg1)
-{
-    updateTabelWidget(ui->tableWidget,arg1);
-}
 
-void UserInterface::on_comboBox_4_activated(const QString &arg1)
-{
-    updateTabelWidget(ui->tableWidget_2,arg1);
-}
 
 
 // Set up plot name
@@ -448,27 +492,6 @@ void UserInterface::on_comboBox_2_activated(int index)
 
 }
 
-// Calibration Stuff
-void UserInterface::on_pushButton_10_clicked()
-{
-    CameraCalibration::create_board();
-}
-
-void UserInterface::on_pushButton_12_clicked()
-{
-
-    CameraCalibration::save_photo(videostream_0->last_image_);
-}
-
-void UserInterface::on_pushButton_13_clicked()
-{
-    CameraCalibration::calibrate_camera();
-}
-
-void UserInterface::on_pushButton_11_clicked()
-{
-    marker_.create_aruco_marker(ui->lineEdit_3->text().toInt());
-}
 
 // Set init marker
 void UserInterface::on_pushButton_15_clicked()
@@ -592,41 +615,4 @@ void UserInterface::on_pushButton_17_clicked()
 
     config["Absolut Pose"][ui->lineEdit_6->text().toStdString()] =vec;
     ConfigHandler::updateConfig(config,"poses.yaml");
-}
-
-#include <franka/model.h>
-
-void UserInterface::on_pushButton_9_clicked()
-{
-    qDebug() << ui->listWidget_3->item(0)->flags() << endl;
-}
-
-void UserInterface::on_listWidget_3_itemClicked(QListWidgetItem *item)
-{
-
-}
-
-void UserInterface::on_pushButton_clicked()
-{
-    NewDevice new_device;
-    // connect(&new_device,SLOT(device_created),this,test);
-
-//    new QListWidgetItem(QString::fromStdString("New Group"), ui->listWidget_3);
-
-}
-
-void UserInterface::on_pushButton_2_clicked()
-{
-    qDeleteAll(ui->listWidget_3->selectedItems());
-//    ui->listWidget_3->removeItemWidget(ui->listWidget_3->currentItem());
-}
-
-void UserInterface::on_listWidget_3_itemActivated(QListWidgetItem *item)
-{
-    qDebug() << item->text() << endl;
-}
-
-void UserInterface::on_listWidget_3_activated(const QModelIndex &index)
-{
-    qDebug() << index.row() << endl;
 }

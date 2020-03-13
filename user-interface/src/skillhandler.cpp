@@ -1,80 +1,56 @@
 #include "skillhandler.h"
 
-#include <bitset>
+int counter = 0;
 
-void SkillHandler::addGroup()
+void SkillHandler::setActualMarker(QListWidgetItem *item)
 {
-    groups_.push_back("New Group");
-    updateGroupWidget();
-}
-
-void SkillHandler::changeGroupName(QListWidgetItem *item)
-{
+    actual_marker_ = item->text().toInt();
+    initial_postion = Eigen::Map<Eigen::Matrix<double, 4, 4> >(lastState_.state_->O_T_EE.data());
 
 }
 
-void SkillHandler::moveGroupUp()
+void SkillHandler::setLastState(StateSerialization *state)
 {
-     std::vector<std::string>::iterator it = std::find(groups_.begin(), groups_.end(), selected_group_name);
-
-     if(it != groups_.begin()){
-         std::string temp = *(it-1);
-         *(it-1) = *it;
-         *it = temp;
-     }
-
-    updateGroupWidget();
-    emit setGroupRow(it-groups_.begin()-1);
+    lastState_ = *state;
 }
 
-void SkillHandler::removeGroup()
+void SkillHandler::setActualPose()
 {
-    groups_.erase(std::remove(groups_.begin(), groups_.end(), selected_group_name), groups_.end());
-
-    updateGroupWidget();
+    goal_pose_ = Eigen::Map<Eigen::Matrix<double, 4, 4> >(lastState_.state_->O_T_EE.data());
+    joint_pose_ = Eigen::Map<Eigen::Matrix<double, 7, 1> >(lastState_.state_->q.data());
 }
 
-void SkillHandler::moveGroup(QModelIndexList indexes)
+void SkillHandler::setDuration(double time)
 {
-    qDebug() << "indexes" << endl;
-    qDebug() << indexes << endl;
+    qDebug() << time;
+    duration = time;
 }
 
-void SkillHandler::showChange(QListWidgetItem *current, QListWidgetItem *previous)
+std::string SkillHandler::create_relative_pose()
 {
-    qDebug() << "current" << endl;
-    qDebug() << current->text() << endl;
+    std::string command = "Hi: " + std::to_string(counter++);
 
-    if(previous != nullptr){
-        qDebug() << "previous" << endl;
-        qDebug() << previous->text() << endl;
+
+    Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(lastState_.state_->O_T_EE.data());
+
+    Eigen::Matrix<double, 4, 4> rel_position = initial_postion.inverse()*O_T_EE;
+
+    return command;
+}
+
+std::string SkillHandler::create_joint_position()
+{
+    std::string command = "JointPose";
+    for(int i = 0 ; i < joint_pose_.size(); i++){
+        command += " " + std::to_string(joint_pose_[i]);
     }
+    command += " " + std::to_string(duration);
 
-}
+    return command;
 
-void SkillHandler::setSelectedGroup(QListWidgetItem *item)
-{
-    selected_group_name = item->text().toStdString();
-}
-
-void SkillHandler::updateGroupWidget()
-{
-    emit clearGroupWidget();
-
-    for(auto& element : groups_){
-        QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(element));
-        item->setFlags(item->flags () | Qt :: ItemIsEditable);
-        std::cout << item->text().toStdString()  << std::endl;
-        std::cout << std::bitset<8>(item->flags())  << std::endl;
-        emit addGroupToWidget(item);
-    }
 }
 
 SkillHandler::SkillHandler(QObject *parent) : QObject(parent)
 {
-    // Setup teaching
-    YAML::Node devices_dict = ConfigHandler::getConfig("skills.yaml");
-    groups_ = devices_dict["Groups"].as<std::vector<std::string>>();
 
-    updateGroupWidget();
 }

@@ -2,16 +2,37 @@ Groups:
   - Refrigerator
   - Water Bath
   - Holder 1
-
-
+  - Standard
 Refrigerator:
   Skills:
     - Open
-    - Close
-    - Test
   Open:
-    - AbsPose 0.1 23 12 1
-  Close:
-    - AbsPose 0.1 23 12 1
+    - JointPose 0,296236 -1,493252 -0,482027 -2,505674 -0,306091 2,667939 0,561221 0,100000
+    - RelPose -0,200000 0,000000 0,000000 0,000000 0,000000 0,000000 2,000000
+Water Bath:
+  Skills:
+    - Test
   Test:
     - AbsPose 0.1 23 12 1
+    - JointPose -0,136221 -1,365542 0,075451 -2,570008 0,092547 1,905870 0,721954
+Holder 1:
+  Skills:
+    - Test2
+  Test2:
+    - AbsPose 0.1 23 12 1
+Standard:
+  Testing:
+    - JointPose -0,000159 -0,785586 0,000109 -2,356634 0,000274 1,570929 0,785154 0,500000
+    - JointPose 0,145474 -0,921116 0,440280 -2,268993 0,292130 1,756066 0,784266 1,000000
+    - JointPose -0,090195 -1,028284 -0,035171 -2,240165 -0,179851 1,610597 0,776008 0,500000
+  Skills:
+    - Testing
+    - Test2
+    - ColConBehaviour
+    - RelMove
+  Test2:
+    - Gripper 0,030000 0,010000 10,000000 0,002000
+  ColConBehaviour:
+    - SetColConBehaviour 100,000000 100,000000
+  RelMove:
+    - RelPose 0,050000 0,000000 0,000000 0,000000 0,000000 0,000000 2,000000

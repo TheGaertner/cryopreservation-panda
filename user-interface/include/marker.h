@@ -17,7 +17,7 @@
 class Marker
 {
 public:
-    void create_aruco_marker(int id);
+    static void create_aruco_marker(int id);
     std::vector<int> get_ids(cv::Mat image);
     std::tuple<std::vector<int>, std::vector<Eigen::Matrix<double, 4, 4>>> get_marker(cv::Mat image);
     cv::Mat draw_marker(cv::Mat image);

@@ -99,12 +99,29 @@ void Skills::touchR()
     });
 }
 
-void Skills::relPose(double x, double y, double z, double xx, double yy, double zz,double duration)
+void Skills::relPose(double x, double y, double z, double xx, double yy, double zz,double duration,bool EE_frame)
 {
+    if(EE_frame){
+        Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
+        Eigen::Matrix<double, 3, 3> rotation = O_T_EE.block(0,0,3,3).inverse();
+
+        Eigen::Matrix<double, 3, 1> input(x,y,z);
+        Eigen::Matrix<double, 3, 1> output = rotation *input;
+        x =  output.x();
+        y =  output.y();
+        z =  output.z();
+
+        xx = 0;
+        yy = 0;
+        zz = 0;
+    }
+
     double time = 0;
     auto cartesian_motion = [=,&x, &y, &z,&xx,&yy,&zz, &time, &duration](const franka::RobotState& robot_state,
             franka::Duration period) -> franka::CartesianVelocities {
         time += period.toSec();
+
+
 
         if(std::accumulate(robot_state.cartesian_contact.begin(), robot_state.cartesian_contact.end(), 0)){
             x *=0.7;
@@ -133,6 +150,14 @@ void Skills::relPose(double x, double y, double z, double xx, double yy, double 
     };
 
     robot_->control(cartesian_motion,franka::ControllerMode::kCartesianImpedance,true,10);
+}
+
+void Skills::joint_pose(double q0, double q1, double q2, double q3, double q4, double q5, double q6, double speedfactor)
+{
+    setDefaultBehavior();
+    std::array<double, 7> q_goal = {{q0,q1,q2,q3,q4,q5,q6,}};
+    MotionGenerator motion_generator(speedfactor, q_goal);
+    robot_->control(motion_generator);
 }
 
 void Skills::absPose(Eigen::Matrix<double, 4, 4> goal_pose, double duration)

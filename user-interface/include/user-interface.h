@@ -7,6 +7,7 @@
 #include <QTableView>
 #include <QString>
 #include <QListWidgetItem>
+#include <QTableWidget>
 
 #include <cstdlib>
 
@@ -29,7 +30,7 @@
 #include "tcp_command.h"
 #include "marker.h"
 #include "newdevice.h"
-#include "skillhandler.h"
+#include "skillhandlerinterface.h"
 
 
 
@@ -51,10 +52,10 @@ signals:
     void go_to_init();
     void tcp_custome_command(QString command);
     void tcp_adresse_changed(QString adresse);
+    void current_robot_state(StateSerialization *state);
 
 public:
     UserInterface(QWidget *parent = nullptr, QString  command="");
-    void setEditable(QListWidgetItem*);
 
     QGraphicsPixmapItem pixmap_0;
     QGraphicsPixmapItem pixmap_1;
@@ -62,16 +63,18 @@ public:
 
 
 public slots:
-    void processPendingDatagrams();
-    void set_display_0(QPixmap item);
-    void set_display_1(QPixmap item);
+    void processPendingUDPDatagrams();
     void update_marker_list(std::vector<int> ids);
 
 private slots:
 
-    void on_pushButton_3_clicked();
+    void updateTabelWidget(QTableWidget* pointer, QString name);
 
-    void on_pushButton_4_clicked();
+    void update_statusbar(StateSerialization *state);
+
+    void update_tablewidgets(StateSerialization *state);
+
+    void update_plot(StateSerialization *state);
 
     void on_pushButton_6_clicked();
 
@@ -79,23 +82,9 @@ private slots:
 
     void on_pushButton_8_clicked();
 
-    void on_lineEdit_returnPressed();
-
     void on_comboBox_activated(const QString &arg1);
 
     void on_comboBox_2_activated(int index);
-
-    void on_comboBox_3_activated(const QString &arg1);
-
-    void on_comboBox_4_activated(const QString &arg1);
-
-    void on_pushButton_10_clicked();
-
-    void on_pushButton_11_clicked();
-
-    void on_pushButton_12_clicked();
-
-    void on_pushButton_13_clicked();
 
     void on_pushButton_15_clicked();
 
@@ -117,20 +106,6 @@ private slots:
 
     void on_lineEdit_2_textChanged(const QString &arg1);
 
-    void on_pushButton_5_clicked();
-
-    void on_pushButton_9_clicked();
-
-    void on_listWidget_3_itemClicked(QListWidgetItem *item);
-
-    void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void on_listWidget_3_itemActivated(QListWidgetItem *item);
-
-    void on_listWidget_3_activated(const QModelIndex &index);
-
 private:
     Ui::UserInterface *ui;
     QUdpSocket *socket_udp_ = nullptr;
@@ -150,7 +125,7 @@ private:
     int save_image_counter_ = 0;
     QString command_;
     Marker marker_;
-    SkillHandler skill_handler_;
+    SkillHandlerInterface skill_handler_interface_;
 
 
 };

@@ -5,31 +5,33 @@
 #include <QListWidgetItem>
 #include <QDebug>
 
-#include "config_handler.h"
+#include <Eigen/Dense>
 
-class SkillHandler: public QObject
+#include "serialization.h"
+
+class SkillHandler : public QObject
 {
     Q_OBJECT
-
-signals:
-    void addGroupToWidget(QListWidgetItem *item);
-    void setGroupRow(int);
-    void clearGroupWidget();
-
 public:
-    void addGroup();
-    void changeGroupName(QListWidgetItem *item);
-    void moveGroupUp();
-    void removeGroup();
-    void moveGroup(QModelIndexList indexes);
-    void showChange(QListWidgetItem *current, QListWidgetItem *previous);
-    void setSelectedGroup(QListWidgetItem *item);
-    void updateGroupWidget();
+    void setActualMarker(QListWidgetItem *item);
+    void setLastState(StateSerialization *state);
+    void setActualPose();
+    void setDuration(double time);
+
+    std::string create_relative_pose();
+    std::string create_joint_position();
+
     explicit SkillHandler(QObject *parent = nullptr);
 
 private:
-    std::vector<std::string> groups_;
-    std::string selected_group_name;
+    StateSerialization lastState_;
+    int actual_marker_;
+    Eigen::Matrix<double, 4, 4> initial_postion;
+    Eigen::Matrix<double, 4, 4> goal_pose_;
+    Eigen::Matrix<double, 7, 1> joint_pose_;
+    double duration;
+
+
 };
 
 #endif // SKILLHANDLER_H
