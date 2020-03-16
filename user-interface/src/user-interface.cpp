@@ -148,7 +148,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(ui->pushButton_32,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::createJointPosition);
 
 
-   // Relative Movement
+    // Relative Movement
     connect(ui->pushButton_37,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.createRelMovement(ui->lineEdit_29->text().toDouble(),
                                                                                                                                  ui->lineEdit_30->text().toDouble(),
                                                                                                                                  ui->lineEdit_31->text().toDouble(),
@@ -172,16 +172,25 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
 
     // Set Cartesian Impedance
     connect(ui->pushButton_49,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_cartesian_impedance(ui->lineEdit_67->text().toDouble(),
-                                                                                                                                    ui->lineEdit_66->text().toDouble(),
-                                                                                                                                    ui->lineEdit_52->text().toDouble(),
-                                                                                                                                    ui->lineEdit_64->text().toDouble(),
-                                                                                                                                    ui->lineEdit_65->text().toDouble(),
-                                                                                                                                    ui->lineEdit_68->text().toDouble());});
+                                                                                                                                       ui->lineEdit_66->text().toDouble(),
+                                                                                                                                       ui->lineEdit_52->text().toDouble(),
+                                                                                                                                       ui->lineEdit_64->text().toDouble(),
+                                                                                                                                       ui->lineEdit_65->text().toDouble(),
+                                                                                                                                       ui->lineEdit_68->text().toDouble());});
 
     connect(ui->pushButton_50,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_default_behaviour();});
 
 
     connect(ui->pushButton_38,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.add_end();});
+
+    connect(ui->pushButton_41,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.go_to_abs_pose(ui->lineEdit_39->text().toDouble(),
+                                                                                                                              ui->lineEdit_42->text().toDouble(),
+                                                                                                                              ui->lineEdit_41->text().toDouble(),
+                                                                                                                              ui->lineEdit_40->text().toDouble(),
+                                                                                                                              ui->lineEdit_44->text().toDouble(),
+                                                                                                                              ui->lineEdit_45->text().toDouble(),
+                                                                                                                              ui->lineEdit_43->text().toDouble());});
+
 
 
 

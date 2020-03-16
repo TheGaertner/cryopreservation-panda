@@ -76,6 +76,7 @@ public:
     void set_cartesian_impedance(double x, double y, double z, double xx, double yy, double zz);
     void add_end();
     void set_default_behaviour();
+    void go_to_abs_pose(double x, double y, double z, double xx, double yy, double zz, double duration);
 
     void setup_skillhandler(Videostream* videostream);
 

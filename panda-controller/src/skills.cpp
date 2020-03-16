@@ -171,25 +171,51 @@ void Skills::absPose(Eigen::Matrix<double, 4, 4> goal_pose, double duration)
 
     Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
 
-    Eigen::Matrix<double, 3, 3> goal_rotation = goal_pose.block(0,0,3,3); //*Eigen::Quaterniond(0,1,0,0)*Eigen::Quaterniond(0.7071068,0,0,-0.7071068);
+    Eigen::Matrix<double, 3, 3> goal_rotation = goal_pose.block(0,0,3,3);
     Eigen::Matrix<double, 3, 3> ee_rotation = O_T_EE.block(0,0,3,3);
 
-    Eigen::Matrix<double, 3, 3> diff_rotation = ee_rotation.inverse()*goal_rotation; // O_T_EE.inv * O_T_M
+    Eigen::Matrix<double, 3, 3> diff_rotation = ee_rotation.inverse()*goal_rotation;
+
+    std::cout << "diff_rotation" << std::endl;
+    std::cout << diff_rotation << std::endl;
 
     Eigen::AngleAxisd angle_axis;
     angle_axis.fromRotationMatrix(diff_rotation);
 
+    std::cout << "angle_axis" << std::endl;
+    std::cout << angle_axis.angle() << std::endl;
+
+    Eigen::AngleAxisd angle_axis2;
+    angle_axis2.fromRotationMatrix(diff_rotation.inverse());
+    std::cout << "angle_axis2" << std::endl;
+    std::cout << angle_axis2.angle() << std::endl;
+
+
     Eigen::Vector3d axis = angle_axis.axis();
     axis = ee_rotation.inverse()*axis;
+
+    std::cout << "axis(0)*angle_axis.angle()" << std::endl;
+    std::cout << axis(0)*angle_axis.angle() << std::endl;
+
+    std::cout << "axis(1)*angle_axis.angle()" << std::endl;
+    std::cout << axis(1)*angle_axis.angle() << std::endl;
+
+    std::cout << "axis(2)*angle_axis.angle()" << std::endl;
+    std::cout << axis(2)*angle_axis.angle() << std::endl;
+
 
     relPose((goal_pose-O_T_EE)(0,3),
             (goal_pose-O_T_EE)(1,3),
             (goal_pose-O_T_EE)(2,3),
             axis(0)*angle_axis.angle(), // -
             axis(1)*angle_axis.angle(),
-            axis(2)*angle_axis.angle());
+            axis(2)*angle_axis.angle(),
+            duration);
 
 
+    O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
+    std::cout << "O_T_EE" << std::endl;
+    std::cout << O_T_EE << std::endl;
 
 }
 

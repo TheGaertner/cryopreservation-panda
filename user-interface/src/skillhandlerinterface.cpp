@@ -88,6 +88,7 @@ void SkillHandlerInterface::init()
     movement_primitves.append("Relative Pose");
     movement_primitves.append("Joint Position");
     movement_primitves.append("Relative Movement");
+    movement_primitves.append("Absolut Position");
     movement_primitves.append("Gripper");
     movement_primitves.append("Set Collision / Contact Force");
     movement_primitves.append("Set Cartesian Impedance");
@@ -231,6 +232,40 @@ void SkillHandlerInterface::add_end()
 void SkillHandlerInterface::set_default_behaviour()
 {
     std::string command = "SetDefaulBehavior";
+
+    sequence_elements_.push_back(command);
+    updateSequenceWidget();
+    updateConfig();
+}
+
+void SkillHandlerInterface::go_to_abs_pose(double x, double y, double z, double xx, double yy, double zz, double duration)
+{
+    Eigen::Matrix<double, 4, 4> goal_pose;
+
+    goal_pose(0,3)= x;
+    goal_pose(1,3)= y;
+    goal_pose(2,3)= z;
+    goal_pose(3,3)= 1;
+
+    Eigen::Matrix3d n;
+    n = Eigen::AngleAxisd(xx, Eigen::Vector3d::UnitX())
+      * Eigen::AngleAxisd(yy, Eigen::Vector3d::UnitY())
+      * Eigen::AngleAxisd(zz, Eigen::Vector3d::UnitZ());
+
+    goal_pose(3,0)= 0;
+    goal_pose(3,1)= 0;
+    goal_pose(3,2)= 0;
+
+    goal_pose.block(0,0,3,3)= n;
+
+    std::cout << goal_pose << std::endl;
+
+    std::string command = "AbsPose ";
+    for(int i = 0; i < goal_pose.size(); i ++){
+         command += std::to_string(goal_pose(i));
+         command += " ";
+    }
+    command += std::to_string(duration);
 
     sequence_elements_.push_back(command);
     updateSequenceWidget();
