@@ -32,6 +32,7 @@ SOURCES += \
     ../panda-controller/src/config_handler.cpp \
     external/qcustomplot/qcustomplot.cpp \
     src/cameracalibration.cpp \
+    src/devicehandler.cpp \
     src/main.cpp \
     src/skillhandlerinterface.cpp \
     src/user-interface.cpp \
@@ -50,7 +51,8 @@ HEADERS += \
     include/user-interface.h \
     include/marker.h \
     include/tcp_command.h \
-    include/videostream.h \
+    include/videostream.h \ \
+    include/devicehandler.h
 
 FORMS += \
     newdevice.ui \

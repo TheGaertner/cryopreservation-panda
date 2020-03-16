@@ -37,14 +37,16 @@ std::tuple<std::vector<int>, std::vector<Eigen::Matrix<double, 4, 4>>> Marker::g
 
     std::vector<Eigen::Matrix<double, 4, 4>> positions;
 
+    DeviceHandler device_handler;
+
     for(int i = 0; i < int(ids.size());i++){
-        double marker_size;
-        if(ids[i]< 50)
-            marker_size = 0.05;
-        else if(ids[i]<100)
-            marker_size = 0.08;
-        else
-            marker_size = 0.16;
+        double marker_size = device_handler.get_device(ids[i]).marker_size;
+//        if(ids[i]< 50)
+//            marker_size = 0.05;
+//        else if(ids[i]<100)
+//            marker_size = 0.08;
+//        else
+//            marker_size = 0.16;
 
         std::cout << "Marker Size:  " << marker_size << std::endl;
 

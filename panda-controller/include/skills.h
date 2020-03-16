@@ -17,6 +17,7 @@ public:
     void push(Eigen::Vector3d direction, double distance);
     void setCollisionValue(int value);
     void setContactValue(int value);
+    void setCartesianImpedance(double x, double y, double z, double xx, double yy, double zz);
     void updateCollisionContactValue();
     void setDefaultBehavior();
     void automaticErrorRecovery();

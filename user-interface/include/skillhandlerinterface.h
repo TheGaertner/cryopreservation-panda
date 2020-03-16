@@ -8,6 +8,7 @@
 #include "config_handler.h"
 #include "skillhandler.h"
 #include "serialization.h"
+#include "videostream.h"
 
 class SkillHandlerInterface: public QObject
 {
@@ -72,6 +73,11 @@ public:
     void gripper_action(double width, double speed, double force, double tolerance);
     void gripper_homing();
     void set_colcon_behaviour(double col,double con);
+    void set_cartesian_impedance(double x, double y, double z, double xx, double yy, double zz);
+    void add_end();
+    void set_default_behaviour();
+
+    void setup_skillhandler(Videostream* videostream);
 
     explicit SkillHandlerInterface(QObject *parent = nullptr);
 

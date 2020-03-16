@@ -93,6 +93,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(this,&UserInterface::current_robot_state,this,&UserInterface::update_plot);
 
     // Group Widget
+    skill_handler_interface_.setup_skillhandler(videostream_0);
     connect(ui->lineEdit_13,&QLineEdit::textChanged,&skill_handler_interface_,&SkillHandlerInterface::setNewGroupName);
     connect(ui->pushButton,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::addGroup);
     connect(ui->pushButton_2,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::removeGroup);
@@ -168,6 +169,20 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     // Contact Collision Behaviour
     connect(ui->pushButton_48,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_colcon_behaviour(ui->lineEdit_53->text().toDouble(),
                                                                                                                                     ui->lineEdit_58->text().toDouble());});
+
+    // Set Cartesian Impedance
+    connect(ui->pushButton_49,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_cartesian_impedance(ui->lineEdit_67->text().toDouble(),
+                                                                                                                                    ui->lineEdit_66->text().toDouble(),
+                                                                                                                                    ui->lineEdit_52->text().toDouble(),
+                                                                                                                                    ui->lineEdit_64->text().toDouble(),
+                                                                                                                                    ui->lineEdit_65->text().toDouble(),
+                                                                                                                                    ui->lineEdit_68->text().toDouble());});
+
+    connect(ui->pushButton_50,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_default_behaviour();});
+
+
+    connect(ui->pushButton_38,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.add_end();});
+
 
 
     skill_handler_interface_.init();

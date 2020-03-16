@@ -7,11 +7,16 @@
 
 #include <Eigen/Dense>
 
-#include "serialization.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
-class SkillHandler : public QObject
+#include "serialization.h"
+#include "marker.h"
+#include "videostream.h"
+#include "devicehandler.h"
+
+class SkillHandler
 {
-    Q_OBJECT
 public:
     void setActualMarker(QListWidgetItem *item);
     void setLastState(StateSerialization *state);
@@ -19,13 +24,17 @@ public:
     void setDuration(double time);
 
     std::string create_relative_pose();
+    std::string go_to_relative_pose(std::string command);
+    std::string go_to_absolute_pose( Eigen::Matrix<double, 4, 4> pose);
     std::string create_joint_position();
 
-    explicit SkillHandler(QObject *parent = nullptr);
+    explicit SkillHandler(Videostream* videostream, QObject *parent = nullptr);
 
 private:
     StateSerialization lastState_;
-    int actual_marker_;
+    Videostream* videostream_;
+    int actual_marker_id_;
+    Eigen::Matrix<double, 4, 4> marker_position;
     Eigen::Matrix<double, 4, 4> initial_postion;
     Eigen::Matrix<double, 4, 4> goal_pose_;
     Eigen::Matrix<double, 7, 1> joint_pose_;

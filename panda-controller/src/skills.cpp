@@ -27,6 +27,7 @@ void Skills::setDefaultBehavior() {
     robot_->setCartesianImpedance({{3000, 3000, 300, 300, 300, 300}});
 }
 
+
 void Skills::updateCollisionContactValue()
 {
     std::array<double, 7>joint_collision;
@@ -60,6 +61,11 @@ void Skills::setContactValue(int value)
     cartesian_contact_ = value;
 
     updateCollisionContactValue();
+}
+
+void Skills::setCartesianImpedance(double x, double y, double z, double xx, double yy, double zz)
+{
+     robot_->setCartesianImpedance({{x, y, z, xx, yy, zz}});
 }
 
 

@@ -90,6 +90,7 @@ void SkillHandlerInterface::init()
     movement_primitves.append("Relative Movement");
     movement_primitves.append("Gripper");
     movement_primitves.append("Set Collision / Contact Force");
+    movement_primitves.append("Set Cartesian Impedance");
 
     emit addMovementPrimitiveToWidget(movement_primitves);
 }
@@ -122,6 +123,13 @@ void SkillHandlerInterface::updateConfig()
 void SkillHandlerInterface::playSequence()
 {
     for(int i = 0; i < sequence_elements_.size(); i++){
+        if(sequence_elements_[i] == "Stop"){
+            break;
+        }
+        if(sequence_elements_[i].find("RelToMarker") == 0){
+            emit command(QString::fromStdString(skill_handler_->go_to_relative_pose(sequence_elements_[i])));
+            continue;
+        }
         emit command(QString::fromStdString(sequence_elements_[i]));
     }
 
@@ -194,6 +202,44 @@ void SkillHandlerInterface::set_colcon_behaviour(double col, double con)
     updateSequenceWidget();
     updateConfig();
 
+}
+
+void SkillHandlerInterface::set_cartesian_impedance(double x, double y, double z, double xx, double yy, double zz)
+{
+    std::string command = "CartesianImpedance";
+    command += " " + std::to_string(x);
+    command += " " + std::to_string(y);
+    command += " " + std::to_string(z);
+    command += " " + std::to_string(xx);
+    command += " " + std::to_string(yy);
+    command += " " + std::to_string(zz);
+
+    sequence_elements_.push_back(command);
+    updateSequenceWidget();
+    updateConfig();
+}
+
+void SkillHandlerInterface::add_end()
+{
+    std::string command = "Stop";
+
+    sequence_elements_.push_back(command);
+    updateSequenceWidget();
+    updateConfig();
+}
+
+void SkillHandlerInterface::set_default_behaviour()
+{
+    std::string command = "SetDefaulBehavior";
+
+    sequence_elements_.push_back(command);
+    updateSequenceWidget();
+    updateConfig();
+}
+
+void SkillHandlerInterface::setup_skillhandler(Videostream *videostream)
+{
+    skill_handler_ = new SkillHandler(videostream);
 }
 
 void SkillHandlerInterface::setSelectedGroup(QListWidgetItem *item)
@@ -336,5 +382,5 @@ void SkillHandlerInterface::updateSequenceWidget()
 SkillHandlerInterface::SkillHandlerInterface(QObject *parent)
     : QObject(parent)
 {
-    skill_handler_ = new SkillHandler();
+
 }

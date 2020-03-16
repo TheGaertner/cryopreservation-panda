@@ -63,6 +63,25 @@ void task_handler::execute_task()
                 std::cout << "Go to initial position finished!" << std::endl;
             }
 
+
+            if(name.find("CartesianImpedance")== 0){
+                std::cout << "___________________________" << std::endl;
+                std::cout << "Start: " << name << std::endl;
+                std::vector<std::string> strs;
+                boost::split(strs, name, boost::is_any_of(" "));
+                double target_x = std::stod(strs[1]);
+                double target_y = std::stod(strs[2]);
+                double target_z = std::stod(strs[3]);
+
+                double target_xx = std::stod(strs[4]);
+                double target_yy = std::stod(strs[5]);
+                double target_zz = std::stod(strs[6]);
+
+                skills_->setCartesianImpedance(target_x,target_y,target_z,target_xx,target_yy,target_zz);
+
+                std::cout << "Cartesian Impedance set!"<< std::endl;
+            }
+
             if(name.find("JointPose")== 0){
                 std::cout << "___________________________" << std::endl;
                 std::cout << name << std::endl;
@@ -71,12 +90,6 @@ void task_handler::execute_task()
 
                 skills_->joint_pose(std::stod(strs[1]),std::stod(strs[2]),std::stod(strs[3]),std::stod(strs[4]),std::stod(strs[5]),std::stod(strs[6]),std::stod(strs[7]),std::stod(strs[8]));
                 std::cout << "Go to joint position finished!" << std::endl;
-            }
-
-            if(name == "TouchR"){
-                std::cout << "___________________________" << std::endl;
-                std::cout << "Swing around z-axis" << std::endl;
-
             }
 
             if(name.find("Gripper")==0){ // Gripper 0.05 0.1, 60
