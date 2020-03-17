@@ -1,5 +1,7 @@
 #include "task_handler.h"
 
+using namespace std;
+
 void task_handler::clearTaskList()
 {
     std::queue<std::string> empty;
@@ -26,8 +28,7 @@ void task_handler::execute_task()
 {
     try
     {
-
-        if(!task_list_.empty() && (robot_->readOnce().robot_mode != franka::RobotMode::kUserStopped)){
+        if(!task_list_.empty() && (robot_->readOnce().robot_mode == franka::RobotMode::kIdle)){
 
 
             std::string name = task_list_.front();
@@ -109,12 +110,12 @@ void task_handler::execute_task()
                     double speed;
                     double force;
                     double tolerance;
-                    if(strs.size()>1){
+//                    if(strs.size()>1){
                         grasping_width = std::stod(strs[1]);
                         speed = std::stod(strs[2]);
                         force = std::stod(strs[3]);
                         tolerance = std::stod(strs[4]);
-                    }
+//                    }
 
 
                     if (!gripper_->grasp(grasping_width, speed, force,tolerance,tolerance)) {

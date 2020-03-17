@@ -145,9 +145,9 @@ void SkillHandlerInterface::createRelativePose()
 
 }
 
-void SkillHandlerInterface::createJointPosition()
+void SkillHandlerInterface::createJointPosition(double speedfactor)
 {
-    std::string command = skill_handler_->create_joint_position();
+    std::string command = skill_handler_->create_joint_position(speedfactor);
     sequence_elements_.push_back(command);
     updateSequenceWidget();
     updateConfig();
@@ -266,6 +266,15 @@ void SkillHandlerInterface::go_to_abs_pose(double x, double y, double z, double 
          command += " ";
     }
     command += std::to_string(duration);
+
+    sequence_elements_.push_back(command);
+    updateSequenceWidget();
+    updateConfig();
+}
+
+void SkillHandlerInterface::set_actual_position_cart(double duration)
+{
+    std::string command = skill_handler_->set_actual_position_cart(duration);
 
     sequence_elements_.push_back(command);
     updateSequenceWidget();

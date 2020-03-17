@@ -143,9 +143,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(ui->pushButton_30,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::createRelativePose);
 
     // Joint Pose
-    connect(ui->pushButton_31,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::savePose);
-    connect(ui->lineEdit_27,&QLineEdit::textChanged,&skill_handler_interface_,&SkillHandlerInterface::saveDuration);
-    connect(ui->pushButton_32,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::createJointPosition);
+    connect(ui->pushButton_32,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.createJointPosition(ui->lineEdit_27->text().toDouble());});
 
 
     // Relative Movement
@@ -191,7 +189,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
                                                                                                                               ui->lineEdit_45->text().toDouble(),
                                                                                                                               ui->lineEdit_43->text().toDouble());});
 
-
+    connect(ui->pushButton_42,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_actual_position_cart(ui->lineEdit_43->text().toDouble());});
 
 
     skill_handler_interface_.init();

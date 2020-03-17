@@ -26,7 +26,8 @@ public:
     std::string create_relative_pose();
     std::string go_to_relative_pose(std::string command);
     std::string go_to_absolute_pose( Eigen::Matrix<double, 4, 4> pose);
-    std::string create_joint_position();
+    std::string create_joint_position(double speedfactor);
+    std::string set_actual_position_cart(double duration);
 
     explicit SkillHandler(Videostream* videostream, QObject *parent = nullptr);
 

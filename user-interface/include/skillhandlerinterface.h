@@ -68,7 +68,7 @@ public:
     void saveDuration(QString time){skill_handler_->setDuration(time.toDouble());};
 
     void createRelativePose();
-    void createJointPosition();
+    void createJointPosition(double speedfactor);
     void createRelMovement(double x, double y, double z, double xx, double yy, double zz, double duration, bool EE_frame);
     void gripper_action(double width, double speed, double force, double tolerance);
     void gripper_homing();
@@ -77,6 +77,7 @@ public:
     void add_end();
     void set_default_behaviour();
     void go_to_abs_pose(double x, double y, double z, double xx, double yy, double zz, double duration);
+    void set_actual_position_cart(double duration);
 
     void setup_skillhandler(Videostream* videostream);
 

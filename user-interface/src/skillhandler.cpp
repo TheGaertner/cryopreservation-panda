@@ -34,7 +34,6 @@ void SkillHandler::setActualPose()
 
 void SkillHandler::setDuration(double time)
 {
-    qDebug() << time;
     duration = time;
 }
 
@@ -89,16 +88,32 @@ std::string SkillHandler::go_to_absolute_pose(Eigen::Matrix<double, 4, 4> pose)
 
 }
 
-std::string SkillHandler::create_joint_position()
+std::string SkillHandler::create_joint_position(double speedfactor)
 {
+    joint_pose_ = Eigen::Map<Eigen::Matrix<double, 7, 1> >(lastState_.state_->q.data());;
+
     std::string command = "JointPose";
     for(int i = 0 ; i < joint_pose_.size(); i++){
         command += " " + std::to_string(joint_pose_[i]);
     }
-    command += " " + std::to_string(duration);
+    command += " " + std::to_string(speedfactor);
 
     return command;
+}
 
+std::string SkillHandler::set_actual_position_cart(double duration)
+{
+    Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(lastState_.state_->O_T_EE.data());
+
+    std::string command_new = "AbsPose";
+
+    for(int j = 0; j < 16; j++){
+        command_new+= " ";
+        command_new+= std::to_string(O_T_EE(j%4,j/4)+0.0000000001);
+    }
+    std::cout << command_new << std::endl;
+
+    return command_new;
 }
 
 SkillHandler::SkillHandler(Videostream* videostream, QObject *parent)

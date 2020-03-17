@@ -1,5 +1,7 @@
 #include "skills.h"
 
+using namespace std;
+
 void Skills::push(Eigen::Vector3d direction, double distance)
 {
     Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
@@ -24,7 +26,7 @@ void Skills::setDefaultBehavior() {
     updateCollisionContactValue();
 
     robot_->setJointImpedance({{3000, 3000, 3000, 2500, 2500, 2000, 2000}});
-    robot_->setCartesianImpedance({{3000, 3000, 300, 300, 300, 300}});
+    robot_->setCartesianImpedance({{3000, 3000, 3000, 300, 300, 300}});
 }
 
 
@@ -39,6 +41,9 @@ void Skills::updateCollisionContactValue()
     cartesian_collision.fill(cartesian_collision_);
     std::array<double, 6>cartesian_contact;
     cartesian_contact.fill(cartesian_contact_);
+
+    std::cout << "Set Collision to: " << cartesian_collision_ << std::endl;
+    std::cout << "Set Contact to: " << cartesian_contact_ << std::endl;
 
     robot_->setCollisionBehavior(
                 joint_contact, joint_collision,
@@ -65,7 +70,7 @@ void Skills::setContactValue(int value)
 
 void Skills::setCartesianImpedance(double x, double y, double z, double xx, double yy, double zz)
 {
-     robot_->setCartesianImpedance({{x, y, z, xx, yy, zz}});
+    robot_->setCartesianImpedance({{x, y, z, xx, yy, zz}});
 }
 
 
@@ -123,20 +128,32 @@ void Skills::relPose(double x, double y, double z, double xx, double yy, double 
     }
 
     double time = 0;
+
+    //    cout << "xx" << endl;
+    //    cout << xx << endl;
+
+    //    cout << "yy" << endl;
+    //    cout << yy << endl;
+
+    //    cout << "zz" << endl;
+    //    cout << zz << endl;
+
     auto cartesian_motion = [=,&x, &y, &z,&xx,&yy,&zz, &time, &duration](const franka::RobotState& robot_state,
             franka::Duration period) -> franka::CartesianVelocities {
         time += period.toSec();
 
 
 
-        if(std::accumulate(robot_state.cartesian_contact.begin(), robot_state.cartesian_contact.end(), 0)){
-            x *=0.7;
-            y *=0.7;
-            z *=0.7;
-            xx *=0.7;
-            yy *=0.7;
-            zz *=0.7;
-        }
+//        if(std::accumulate(robot_state.cartesian_contact.begin(), robot_state.cartesian_contact.end(), 0)){
+//            cout << "Has contact!"  << endl;
+
+//            x *=0.7;
+//            y *=0.7;
+//            z *=0.7;
+//            xx *=0.7;
+//            yy *=0.7;
+//            zz *=0.7;
+//        }
 
         double v_x = 2*x*2*M_PI / duration * std::cos(2*M_PI / duration *time) * std::sin(2*M_PI / duration *time);
         double v_y = 2*y*2*M_PI / duration * std::cos(2*M_PI / duration *time) * std::sin(2*M_PI / duration *time);
@@ -176,46 +193,20 @@ void Skills::absPose(Eigen::Matrix<double, 4, 4> goal_pose, double duration)
 
     Eigen::Matrix<double, 3, 3> diff_rotation = ee_rotation.inverse()*goal_rotation;
 
-    std::cout << "diff_rotation" << std::endl;
-    std::cout << diff_rotation << std::endl;
-
     Eigen::AngleAxisd angle_axis;
     angle_axis.fromRotationMatrix(diff_rotation);
 
-    std::cout << "angle_axis" << std::endl;
-    std::cout << angle_axis.angle() << std::endl;
-
-    Eigen::AngleAxisd angle_axis2;
-    angle_axis2.fromRotationMatrix(diff_rotation.inverse());
-    std::cout << "angle_axis2" << std::endl;
-    std::cout << angle_axis2.angle() << std::endl;
-
-
     Eigen::Vector3d axis = angle_axis.axis();
-    axis = ee_rotation.inverse()*axis;
-
-    std::cout << "axis(0)*angle_axis.angle()" << std::endl;
-    std::cout << axis(0)*angle_axis.angle() << std::endl;
-
-    std::cout << "axis(1)*angle_axis.angle()" << std::endl;
-    std::cout << axis(1)*angle_axis.angle() << std::endl;
-
-    std::cout << "axis(2)*angle_axis.angle()" << std::endl;
-    std::cout << axis(2)*angle_axis.angle() << std::endl;
-
+    axis = ee_rotation*axis;
 
     relPose((goal_pose-O_T_EE)(0,3),
             (goal_pose-O_T_EE)(1,3),
             (goal_pose-O_T_EE)(2,3),
-            axis(0)*angle_axis.angle(), // -
+            axis(0)*angle_axis.angle(),
             axis(1)*angle_axis.angle(),
             axis(2)*angle_axis.angle(),
             duration);
 
-
-    O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());
-    std::cout << "O_T_EE" << std::endl;
-    std::cout << O_T_EE << std::endl;
 
 }
 
