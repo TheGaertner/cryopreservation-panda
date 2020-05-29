@@ -4,7 +4,7 @@ Groups:
   - Holder 1
   - Standard
   - Testing
-  - ""
+  - Malek
 Refrigerator:
   Skills:
     - Open2
@@ -69,7 +69,8 @@ Testing:
   Skills: [Tet]
   Tet:
     - RelPose -0,100000 0,000000 0,000000 0,000000 0,000000 0,000000 20,000000
-"":
-  "": []
+Malek:
+  Show:
+    - RelPose 0,000000 0,000000 0,000000 -1,500000 0,000000 0,000000 20,000000 EE
   Skills:
-    - ""
+    - Show
