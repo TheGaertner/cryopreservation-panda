@@ -2,17 +2,7 @@ sudo: required
 dist: bionic
 
 before_install:
-  - sudo apt-get install ninja-build
-  - sudo apt-get install libeigen3-dev build-essential git libpoco-dev
-  - git clone --recursive https://github.com/frankaemika/libfranka
-  - cd libfranka
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release ..
-  - cmake --build .
-  - sudo make install
-  - cd ../..
-  - sudo rm -r libfranka
+  - sudo ./install_dependecies_basic.sh
 
 language: cpp
 
