@@ -1,6 +1,7 @@
 client.pro.user
 panda-controller/build
 user-interface/build
+doc
 
 *.user
 *.autosave
