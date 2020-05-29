@@ -8,6 +8,12 @@ With this application it is possible to teach
 
 ## Execution
 
+### Setup
+
+### Camera Calibration
+
+### Teaching
+
 ## Process Description
 
 ## Further Information
