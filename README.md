@@ -4,6 +4,8 @@ With this application it is possible to teach
 
 ## Requirements
 
+### 3D Model Gripper
+
 ## Installation
 
 ## Execution
