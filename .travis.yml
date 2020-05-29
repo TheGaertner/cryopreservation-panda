@@ -1,15 +1,11 @@
-language: cpp
-
 sudo: required
 dist: bionic
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.8
-    packages:
-      - ninja-build
+before_install:
+  - sudo apt-get install ninja-build
+  - sudo apt-get install libeigen3-dev build-essential git libpoco-dev
+
+language: cpp
 
 script:
   - cd panda-controller
