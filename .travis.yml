@@ -3,7 +3,13 @@ language: cpp
 sudo: required
 dist: bionic
 
-install: sudo apt-get install -y ninja-build
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
+    packages:
+      - ninja-build
 
 script:
   - cd panda-controller
