@@ -2,15 +2,25 @@ sudo: required
 dist: bionic
 
 before_install:
+  - sudo apt-get install doxygen
   - sudo apt-get install sshpass
-  - sudo ./install_dependecies_basic.sh
+#  - sudo ./install_dependecies_basic.sh
 
 language: cpp
 
 script:
-  - cd panda-controller
-  - mkdir -p build
-  - cd build
-  - cmake -G Ninja ..
-  - ninja
-  - ./panda-controller
+#  - cd panda-controller
+#  - mkdir -p build
+#  - cd build
+#  - cmake -G Ninja ..
+#  - ninja
+#  - ./panda-controller
+  - doxygen Doxyfile
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: docs/html
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: master
