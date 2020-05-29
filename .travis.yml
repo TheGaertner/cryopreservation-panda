@@ -3,8 +3,7 @@ language: cpp
 sudo: required
 dist: bionic
 
-install: 
-  - sudo apt-get install -y ninja-build
+install: sudo apt-get install -y ninja-build
 
 script:
   - cd panda-controller
