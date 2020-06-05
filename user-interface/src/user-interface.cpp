@@ -450,21 +450,21 @@ void UserInterface::on_pushButton_18_clicked()
 // Franka Desk Calls
 void UserInterface::on_pushButton_6_clicked()
 {
-    YAML::Node config = ConfigHandler::getConfig("config.yaml");;
+    YAML::Node config = ConfigHandler::getConfig("main.yaml");;
     nlohmann::json response;
     cpp_utils::rpc_call(config["nuc"]["hostname"].as<std::string>(),9001,"lock_brakes",{config["robot"]["ip"].as<std::string>(),config["robot"]["desk_username"].as<std::string>(),config["robot"]["desk_password"].as<std::string>()},response);
 }
 
 void UserInterface::on_pushButton_7_clicked()
 {
-    YAML::Node config = ConfigHandler::getConfig("config.yaml");
+    YAML::Node config = ConfigHandler::getConfig("main.yaml");
     nlohmann::json response;
     cpp_utils::rpc_call(config["nuc"]["hostname"].as<std::string>(),9001,"unlock_brakes",{config["robot"]["ip"].as<std::string>(),config["robot"]["desk_username"].as<std::string>(),config["robot"]["desk_password"].as<std::string>()},response);
 }
 
 void UserInterface::on_pushButton_8_clicked()
 {
-    YAML::Node config = ConfigHandler::getConfig("config.yaml");
+    YAML::Node config = ConfigHandler::getConfig("main.yaml");
     nlohmann::json response;
     cpp_utils::rpc_call(config["nuc"]["hostname"].as<std::string>(),9001,"shutdown",{config["robot"]["ip"].as<std::string>(),config["robot"]["desk_username"].as<std::string>(),config["robot"]["desk_password"].as<std::string>()},response);
 }

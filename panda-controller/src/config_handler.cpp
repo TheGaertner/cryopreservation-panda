@@ -11,6 +11,8 @@ void ConfigHandler::setConfig(std::experimental::filesystem::path command, bool 
     std::string pwd = buff;
     pwd.pop_back();
 
+     std::cout << command << std::endl;
+
     std::experimental::filesystem::path pwd_path;
     if(command.is_relative()){
         pwd+=command.string().substr(1,command.string().length()-1);
@@ -21,13 +23,14 @@ void ConfigHandler::setConfig(std::experimental::filesystem::path command, bool 
         config_location = pwd_path;
     }else{
         config_location = command.remove_filename().parent_path();
-
     }
 
     if(global){
         config_location = config_location.parent_path();
     }
+    config_location/="configs";
     config_location/=name;
+
 }
 
 YAML::Node ConfigHandler::getConfig(std::string name){
@@ -36,10 +39,12 @@ YAML::Node ConfigHandler::getConfig(std::string name){
     std::experimental::filesystem::path config_location_temp = config_location;
     config_location_temp.remove_filename()/=name;
 
+
     if(std::experimental::filesystem::exists(config_location_temp)){
         config = YAML::LoadFile(config_location_temp);
     }else{
         std::cout << "Config file does not exist!" << std::endl;
+        throw;
     }
 
     return config;

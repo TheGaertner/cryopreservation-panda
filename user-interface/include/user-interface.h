@@ -29,7 +29,7 @@
 #include "videostream.h"
 #include "tcp_command.h"
 #include "marker.h"
-#include "newdevice.h"
+// #include "newdevice.h"
 #include "skillhandlerinterface.h"
 
 

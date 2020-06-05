@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
     std::thread camera_thread_0([=](){
         if(config["nuc"]["camera_0"]["on"].as<bool>()){
 
-            auto debug = system("chmod +x ../start_camera.sh ");
-            std::string command = "../start_camera.sh '"+ config["nuc"]["camera_0"]["name"].as<std::string>() +"' "+broadcast_adresse_merged+" "+ config["nuc"]["camera_0"]["port"].as<std::string>() +" >/dev/null";
+            auto debug = system("chmod +x ../scripts/start_camera.sh ");
+            std::string command = "../scripts/start_camera.sh '"+ config["nuc"]["camera_0"]["name"].as<std::string>() +"' "+broadcast_adresse_merged+" "+ config["nuc"]["camera_0"]["port"].as<std::string>() +" >/dev/null";
             debug = system(command.c_str());
             std::cout << "Camera 0 started!" << std::endl;
         }
@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
 
     std::thread camera_thread_1([=](){
         if(config["nuc"]["camera_1"]["on"].as<bool>()){
-            auto debug = system("chmod +x ../start_camera.sh ");
-            std::string command = "../start_camera.sh '"+ config["nuc"]["camera_1"]["name"].as<std::string>() +"' "+broadcast_adresse_merged+" "+ config["nuc"]["camera_1"]["port"].as<std::string>() +" >/dev/null";
+            auto debug = system("chmod +x ../scripts/start_camera.sh ");
+            std::string command = "../scripts/start_camera.sh '"+ config["nuc"]["camera_1"]["name"].as<std::string>() +"' "+broadcast_adresse_merged+" "+ config["nuc"]["camera_1"]["port"].as<std::string>() +" >/dev/null";
             debug = system(command.c_str());
             std::cout << "Camera 1 started!" << std::endl;
         }
