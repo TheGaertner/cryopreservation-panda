@@ -10,6 +10,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
                     std::chrono::system_clock::now().time_since_epoch()))
     , marker_(&last_state_)
     , skill_handler_interface_()
+    , task_handler_()
 {
 
     ui->setupUi(this);
@@ -190,6 +191,17 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
                                                                                                                               ui->lineEdit_43->text().toDouble());});
 
     connect(ui->pushButton_42,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_actual_position_cart(ui->lineEdit_43->text().toDouble());});
+
+
+
+    // Task handler
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearGroupWidget, ui->listWidget_15,&QListWidget::clear);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearGroupWidget, ui->listWidget_16,&QListWidget::clear);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addGroupToWidgetTask, ui->listWidget_16,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+//    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::setSelectedGroup);
+//    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::openSkills);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearSkillWidget, ui->listWidget_15,&QListWidget::clear);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addSkillToWidgetTask, ui->listWidget_15,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
 
 
     skill_handler_interface_.init();

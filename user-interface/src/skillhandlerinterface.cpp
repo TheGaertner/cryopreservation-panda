@@ -303,8 +303,11 @@ void SkillHandlerInterface::updateGroupWidget()
     emit clearGroupWidget();
 
     for(auto& element : groups_){
-        QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(element));
+        QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(element));       
         emit addGroupToWidget(item);
+
+        QListWidgetItem* item_task = new QListWidgetItem(QString::fromStdString(element));
+        emit addGroupToWidgetTask(item_task);
     }
 }
 
@@ -361,6 +364,9 @@ void SkillHandlerInterface::updateSkillWidget()
     for(auto& element : skills_){
         QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(element));
         emit addSkillToWidget(item);
+
+        QListWidgetItem* itemTask = new QListWidgetItem(QString::fromStdString(element));
+        emit addSkillToWidgetTask(itemTask);
     }
 }
 

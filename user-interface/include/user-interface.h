@@ -29,8 +29,8 @@
 #include "videostream.h"
 #include "tcp_command.h"
 #include "marker.h"
-// #include "newdevice.h"
 #include "skillhandlerinterface.h"
+#include "taskhandler.h"
 
 
 
@@ -126,6 +126,7 @@ private:
     QString command_;
     Marker marker_;
     SkillHandlerInterface skill_handler_interface_;
+    TaskHandler task_handler_;
 
 
 };

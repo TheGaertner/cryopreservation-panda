@@ -16,10 +16,12 @@ class SkillHandlerInterface: public QObject
 
 signals:
     void addGroupToWidget(QListWidgetItem *item);
+    void addGroupToWidgetTask(QListWidgetItem *item);
     void setGroupRow(int);
     void clearGroupWidget();
 
     void addSkillToWidget(QListWidgetItem *item);
+    void addSkillToWidgetTask(QListWidgetItem *item);
     void setSkillRow(int);
     void clearSkillWidget();
 

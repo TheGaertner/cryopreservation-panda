@@ -39,7 +39,8 @@ SOURCES += \
     src/marker.cpp \
     src/tcp_command.cpp \
     src/videostream.cpp \
-    src/skillhandler.cpp
+    src/skillhandler.cpp \
+    src/taskhandler.cpp
 
 
 HEADERS += \
@@ -51,8 +52,9 @@ HEADERS += \
     include/user-interface.h \
     include/marker.h \
     include/tcp_command.h \
-    include/videostream.h \ \
-    include/devicehandler.h
+    include/videostream.h \
+    include/devicehandler.h \
+    include/taskhandler.h
 
 FORMS += \
     forms/userinterface.ui
