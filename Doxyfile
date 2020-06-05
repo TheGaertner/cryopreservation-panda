@@ -32,7 +32,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "Geant4 examples"
+PROJECT_NAME           = "cryopreservation-panda"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -915,7 +915,8 @@ INPUT                  = Doxymain.h \
                          ../extended/radioactivedecay/rdecay02/.README.txt \
                          ../extended/runAndEvent \
                          ../extended/visualization \
-                         .README.novice.txt
+                         .README.novice.txt \
+		         main_page.md 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -939,7 +940,9 @@ FILE_PATTERNS          = *.hh \
                          *.icc \
                          *.cc \
                          .README*.txt \
-                         *.mac
+                         *.mac \
+			 *.md \
+			 *.markdown
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -1182,7 +1185,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE =
+USE_MDFILE_AS_MAINPAGE = main_page.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
