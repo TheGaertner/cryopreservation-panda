@@ -55,8 +55,7 @@ HEADERS += \
     include/devicehandler.h
 
 FORMS += \
-    newdevice.ui \
-    userinterface.ui
+    forms/userinterface.ui
 
 INCLUDEPATH += /usr/local/include/opencv4
 

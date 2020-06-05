@@ -19,12 +19,13 @@ script:
 #  - cmake -G Ninja ..
 #  - ninja
 #  - ./panda-controller
+  - cd documentation
   - doxygen Doxyfile
 
 deploy:
   provider: pages
   skip_cleanup: true
-  local-dir: docs/html
+  local-dir: build/html
   github_token: $GH_REPO_TOKEN
   on:
     branch: master

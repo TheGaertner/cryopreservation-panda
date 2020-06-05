@@ -1,6 +1,17 @@
 #ifndef SKILLS_H
 #define SKILLS_H
 
+/** @brief Dummy class used for illustration purposes. Doing something with it.
+
+    Detailed description follows here.
+    @author X. XYZ, DESY
+    @date March 2008
+    */
+
+/**
+\todo Das ist ein ToDo test
+*/
+
 #include <boost/range/numeric.hpp>
 
 #include <Eigen/Dense>

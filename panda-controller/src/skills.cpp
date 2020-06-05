@@ -1,7 +1,10 @@
 #include "skills.h"
 
 using namespace std;
+/**
+\todo TODO: Das ist ein ToDo test
 
+*/
 void Skills::push(Eigen::Vector3d direction, double distance)
 {
     Eigen::Matrix<double, 4, 4> O_T_EE = Eigen::Map<Eigen::Matrix<double, 4, 4> >(robot_->readOnce().O_T_EE.data());

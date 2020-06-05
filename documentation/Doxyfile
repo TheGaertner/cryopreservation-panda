@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = docs
+OUTPUT_DIRECTORY       = build
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -152,7 +152,7 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = /Users/ivana/work/packages/geant4/geant4_ref/examples/
+STRIP_FROM_PATH        =
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -654,7 +654,7 @@ SHOW_FILES             = YES
 # Folder Tree View (if specified).
 # The default value is: YES.
 
-SHOW_NAMESPACES        = YES
+SHOW_NAMESPACES        = NO
 
 # The FILE_VERSION_FILTER tag can be used to specify a program or script that
 # doxygen should invoke to get the current version for each file (typically from
@@ -758,165 +758,10 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = Doxymain.h \
-                         Doxymodules_basic.h \
-                         Doxymodules_common.h \
-                         Doxymodules_analysis.h \
-                         Doxymodules_biasing.h \
-                         Doxymodules_electromagnetic.h \
-                         Doxymodules_errorpropagation.h \
-                         Doxymodules_eventgenerator.h \
-                         Doxymodules_exoticphysics.h \
-                         Doxymodules_field.h \
-                         Doxymodules_g3tog4.h \
-                         Doxymodules_geometry.h \
-                         Doxymodules_hadronic.h \
-                         Doxymodules_medical.h \
-                         Doxymodules_optical.h \
-                         Doxymodules_parallel.h \
-                         Doxymodules_parameterisations.h \
-                         Doxymodules_persistency.h \
-                         Doxymodules_physicslists.h \
-                         Doxymodules_polarisation.h \
-                         Doxymodules_radioactivedecay.h \
-                         Doxymodules_runAndEvent.h \
-                         Doxymodules_visualization.h \
-                         .README.HowToNavigate.txt \
-                         ../.README.HowToRun.txt \
-                         ../.README.HowToRunMT.txt \
-                         ../basic/.README.txt \
-                         ../basic/B1 \
-                         ../basic/B2 \
-                         ../basic/B3 \
-                         ../basic/B4 \
-                         ../basic/B5 \
-                         ../extended/.README.txt \
-                         ../extended/common \
-                         ../extended/analysis/.README.txt \
-                         ../extended/analysis/AnaEx01/.README.txt \
-                         ../extended/analysis/AnaEx02/.README.txt \
-                         ../extended/analysis/AnaEx03/.README.txt \
-                         ../extended/analysis/AnaEx03/.README.AIDA.txt \
-                         ../extended/analysis/AnaEx03/.README.OpenScientist.txt \
-                         ../extended/analysis/B1Con \
-                         ../extended/biasing \
-                         ../extended/electromagnetic/.README.txt \
-                         ../extended/electromagnetic/TestEm0/.README.txt \
-                         ../extended/electromagnetic/TestEm1/.README.txt \
-                         ../extended/electromagnetic/TestEm2/.README.txt \
-                         ../extended/electromagnetic/TestEm3/.README.txt \
-                         ../extended/electromagnetic/TestEm4/.README.txt \
-                         ../extended/electromagnetic/TestEm5/.README.txt \
-                         ../extended/electromagnetic/TestEm6/.README.txt \
-                         ../extended/electromagnetic/TestEm7/.README.txt \
-                         ../extended/electromagnetic/TestEm8/.README.txt \
-                         ../extended/electromagnetic/TestEm9/.README.txt \
-                         ../extended/electromagnetic/TestEm10/.README.txt \
-                         ../extended/electromagnetic/TestEm11/.README.txt \
-                         ../extended/electromagnetic/TestEm12/.README.txt \
-                         ../extended/electromagnetic/TestEm13/.README.txt \
-                         ../extended/electromagnetic/TestEm14/.README.txt \
-                         ../extended/electromagnetic/TestEm15/.README.txt \
-                         ../extended/electromagnetic/TestEm16/.README.txt \
-                         ../extended/electromagnetic/TestEm17/.README.txt \
-                         ../extended/electromagnetic/TestEm18/.README.txt \
-                         ../extended/errorpropagation \
-                         ../extended/eventgenerator/.README.txt \
-                         ../extended/eventgenerator/exgps/.README.txt \
-                         ../extended/eventgenerator/HepMC/.README.txt \
-                         ../extended/eventgenerator/HepMC/HepMCEx01 \
-                         ../extended/eventgenerator/HepMC/HepMCEx02 \
-                         ../extended/eventgenerator/HepMC/MCTruth/.README.txt \
-                         ../extended/eventgenerator/particleGun/.README.txt \
-                         ../extended/eventgenerator/pythia/.README.txt \
-                         ../extended/eventgenerator/pythia/decayer6 \
-                         ../extended/eventgenerator/userPrimaryGenerator/.README.txt \
-                         ../extended/exoticphysics/.README.txt \
-                         ../extended/exoticphysics/channeling/.README.txt \
-                         ../extended/exoticphysics/dmparticle/.README.txt \
-                         ../extended/exoticphysics/monopole/.README.txt \
-                         ../extended/exoticphysics/phonon \
-                         ../extended/exoticphysics/ucn \
-                         ../extended/field \
-                         ../extended/g3tog4 \
-                         ../extended/geometry/.README.txt \
-                         ../extended/geometry/transforms/.README.txt \
-                         ../extended/hadronic/.README.txt \
-                         ../extended/hadronic/Hadr00/.README.txt \
-                         ../extended/hadronic/Hadr01/.README.txt \
-                         ../extended/hadronic/Hadr02/.README.txt \
-                         ../extended/hadronic/Hadr03/.README.txt \
-                         ../extended/hadronic/Hadr04/.README.txt \
-                         ../extended/hadronic/Hadr06/.README.txt \
-                         ../extended/hadronic/Hadr07/.README.txt \
-                         ../extended/hadronic/Hadr08/.README.txt \
-                         ../extended/hadronic/FissionFragment \
-                         ../extended/hadronic/NeutronSource/.README.txt \
-                         ../extended/medical/.README.txt \
-                         ../extended/medical/DICOM \
-                         ../extended/medical/DICOM2 \
-                         ../extended/medical/electronScattering/.README.txt \
-                         ../extended/medical/electronScattering2/.README.txt \
-                         ../extended/medical/fanoCavity/.README.txt \
-                         ../extended/medical/fanoCavity2/.README.txt \
-                         ../extended/medical/GammaTherapy/.README.txt \
-                         ../extended/medical/dna/.README.txt \
-                         ../extended/medical/dna/chem1/.README.txt \
-                         ../extended/medical/dna/chem2/.README.txt \
-                         ../extended/medical/dna/chem3/.README.txt \
-                         ../extended/medical/dna/chem4/.README.txt \
-                         ../extended/medical/dna/chem5/.README.txt \
-                         ../extended/medical/dna/clustering/.README.txt \
-                         ../extended/medical/dna/dnadamage1/.README.txt \
-                         ../extended/medical/dna/dnaphysics/.README.txt \
-                         ../extended/medical/dna/icsd/.README.txt \
-                         ../extended/medical/dna/mfp/.README.txt \
-                         ../extended/medical/dna/microdosimetry/.README.txt \
-                         ../extended/medical/dna/microprox/.README.txt \
-                         ../extended/medical/dna/microyz/.README.txt \
-                         ../extended/medical/dna/neuron/.README.txt \
-                         ../extended/medical/dna/pdb4dna/.README.txt \
-                         ../extended/medical/dna/range/.README.txt \
-                         ../extended/medical/dna/slowing/.README.txt \
-                         ../extended/medical/dna/splitting/.README.txt \
-                         ../extended/medical/dna/spower/.README.txt \
-                         ../extended/medical/dna/svalue/.README.txt \
-                         ../extended/medical/dna/wholeNuclearDNA/.README.txt \
-                         ../extended/medical/dna/wvalue/.README.txt \
-                         ../extended/optical/.README.txt \
-                         ../extended/optical/LXe \
-                         ../extended/optical/OpNovice \
-                         ../extended/optical/OpNovice2/.README.txt \
-                         ../extended/optical/wls \
-                         ../extended/parallel/.README.txt \
-                         ../extended/parallel/MPI/.README.txt \
-                         ../extended/parallel/MPI/examples/exMPI01/.README.txt \
-                         ../extended/parallel/MPI/examples/exMPI02/.README.txt \
-                         ../extended/parallel/MPI/examples/exMPI03/.README.txt \
-                         ../extended/parallel/MPI/examples/exMPI04/.README.txt \
-                         ../extended/parallel/MPI/source \
-                         ../extended/parallel/TBB \
-                         ../extended/parallel/ThreadsafeScorers \
-                         ../extended/parallel/TopC/ParN02/.README.txt \
-                         ../extended/parallel/TopC/ParN02/.README.N02.txt \
-                         ../extended/parallel/TopC/ParN04/.README.txt \
-                         ../extended/parallel/TopC/ParN04/.README.N04.txt \
-                         ../extended/parameterisations \
-                         ../extended/persistency \
-                         ../extended/physicslists/.README.txt \
-                         ../extended/physicslists/factory/.README.txt \
-                         ../extended/physicslists/extensibleFactory/.README.txt \
-                         ../extended/physicslists/genericPL/.README.txt \
-                         ../extended/polarisation/.README.txt \
-                         ../extended/polarisation/Pol01/.README.txt \
-                         ../extended/radioactivedecay/.README.txt \
-                         ../extended/radioactivedecay/Activation/.README.txt \
-                         ../extended/radioactivedecay/rdecay01/.README.txt \
-                         ../extended/radioactivedecay/rdecay02/.README.txt \
-                         ../extended/runAndEvent \
-                         ../extended/visualization \
-                         .README.novice.txt \
-		         main_page.md 
+INPUT                  = ../documentation \
+			 ../panda-controller \
+			 ../user-interface
+			 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -936,11 +781,8 @@ INPUT_ENCODING         = UTF-8
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.hh \
-                         *.icc \
-                         *.cc \
-                         .README*.txt \
-                         *.mac \
+FILE_PATTERNS          = *.h \
+			 *.cpp \
 			 *.md \
 			 *.markdown
 
@@ -957,134 +799,9 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../basic/B2/B2b/include/B2ActionInitialization.hh \
-                         ../basic/B2/B2b/include/B2EventAction.hh \
-                         ../basic/B2/B2b/include/B2FieldMessenger.hh \
-                         ../basic/B2/B2b/include/B2MagneticField.hh \
-                         ../basic/B2/B2b/include/B2PrimaryGeneratorAction.hh \
-                         ../basic/B2/B2b/include/B2RunAction.hh \
-                         ../basic/B2/B2b/include/B2TrackerHit.hh \
-                         ../basic/B2/B2b/include/B2TrackerSD.hh \
-                         ../basic/B2/B2b/src/B2ActionInitialization.cc \
-                         ../basic/B2/B2b/src/B2EventAction.cc \
-                         ../basic/B2/B2b/src/B2FieldMessenger.cc \
-                         ../basic/B2/B2b/src/B2MagneticField.cc \
-                         ../basic/B2/B2b/src/B2PrimaryGeneratorAction.cc \
-                         ../basic/B2/B2b/src/B2RunAction.cc \
-                         ../basic/B2/B2b/src/B2TrackerHit.cc \
-                         ../basic/B2/B2b/src/B2TrackerSD.cc \
-                         ../basic/B3/B3b/include/B3Analysis.hh \
-                         ../basic/B3/B3b/include/B3DetectorConstruction.hh \
-                         ../basic/B3/B3b/include/B3PhysicsList.hh \
-                         ../basic/B3/B3b/include/B3PrimaryGeneratorAction.hh \
-                         ../basic/B3/B3b/include/B3StackingAction.hh \
-                         ../basic/B3/B3b/src/B3DetectorConstruction.cc \
-                         ../basic/B3/B3b/src/B3PhysicsList.cc \
-                         ../basic/B3/B3b/src/B3PrimaryGeneratorAction.cc \
-                         ../basic/B3/B3b/src/B3StackingAction.cc \
-                         ../basic/B4/B4b/include/B4Analysis.hh \
-                         ../basic/B4/B4c/include/B4Analysis.hh \
-                         ../basic/B4/B4d/include/B4Analysis.hh \
-                         ../basic/B4/B4b/include/B4DetectorConstruction.hh \
-                         ../basic/B4/B4b/include/B4DetectorMessenger.hh \
-                         ../basic/B4/B4b/src/B4DetectorConstruction.cc \
-                         ../basic/B4/B4b/src/B4DetectorMessenger.cc \
-                         ../basic/B4/B4b/include/B4PrimaryGeneratorAction.hh \
-                         ../basic/B4/B4c/include/B4PrimaryGeneratorAction.hh \
-                         ../basic/B4/B4d/include/B4PrimaryGeneratorAction.hh \
-                         ../basic/B4/B4b/src/B4PrimaryGeneratorAction.cc \
-                         ../basic/B4/B4c/src/B4PrimaryGeneratorAction.cc \
-                         ../basic/B4/B4d/src/B4PrimaryGeneratorAction.cc \
-                         ../basic/B4/B4c/include/B4RunAction.hh \
-                         ../basic/B4/B4d/include/B4RunAction.hh \
-                         ../basic/B4/B4c/src/B4RunAction.cc \
-                         ../basic/B4/B4d/src/B4RunAction.cc \
-                         ../extended/analysis/B1Con/include/B1DetectorConstruction.hh \
-                         ../extended/analysis/B1Con/include/B1EventAction.hh \
-                         ../extended/analysis/B1Con/include/B1EventInformation.hh \
-                         ../extended/analysis/B1Con/include/B1PrimaryGeneratorAction.hh \
-                         ../extended/analysis/B1Con/include/B1SteppingAction.hh \
-                         ../extended/analysis/B1Con/include/B1Run.hh \
-                         ../extended/analysis/B1Con/src/B1DetectorConstruction.cc \
-                         ../extended/analysis/B1Con/src/B1EventAction.cc \
-                         ../extended/analysis/B1Con/src/B1EventInformation.cc \
-                         ../extended/analysis/B1Con/src/B1PrimaryGeneratorAction.cc \
-                         ../extended/analysis/B1Con/src/B1SteppingAction.cc \
-                         ../extended/analysis/B1Con/src/B1Run.cc \
-                         ../extended/g3tog4/clGeometry/common \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/include/HepMCG4AsciiReader.hh \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/include/HepMCG4AsciiReaderMessenger.hh \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/include/HepMCG4Interface.hh \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/include/HepMCG4PythiaInterface.hh \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/include/HepMCG4PythiaMessenger.hh \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/src/HepMCG4AsciiReader.cc \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/src/HepMCG4AsciiReaderMessenger.cc \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/src/HepMCG4Interface.cc \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/src/HepMCG4PythiaInterface.cc \
-                         ../extended/eventgenerator/HepMC/HepMCEx02/src/HepMCG4PythiaMessenger.cc \
-                         ../extended/eventgenerator/HepMC/MCTruth/include/DetectorConstruction.hh \
-                         ../extended/eventgenerator/HepMC/MCTruth/include/PhysicsList.hh \
-                         ../extended/eventgenerator/HepMC/MCTruth/include/PrimaryGeneratorAction.hh \
-                         ../extended/eventgenerator/HepMC/MCTruth/src/DetectorConstruction.cc \
-                         ../extended/eventgenerator/HepMC/MCTruth/src/PhysicsList.cc \
-                         ../extended/eventgenerator/HepMC/MCTruth/src/PrimaryGeneratorAction.cc \
-                         ../extended/eventgenerator/pythia/decayer6/common \
-                         ../extended/parallel/TBB/B2b/exampleB2b.cc \
-                         ../extended/parallel/TBB/B2b/include/B2ActionInitialization.hh \
-                         ../extended/parallel/TBB/B2b/include/B2bChamberParameterisation.hh \
-                         ../extended/parallel/TBB/B2b/include/B2bDetectorConstruction.hh \
-                         ../extended/parallel/TBB/B2b/include/B2bDetectorMessenger.hh \
-                         ../extended/parallel/TBB/B2b/include/B2EventAction.hh \
-                         ../extended/parallel/TBB/B2b/include/B2PrimaryGeneratorAction.hh \
-                         ../extended/parallel/TBB/B2b/include/B2RunAction.hh \
-                         ../extended/parallel/TBB/B2b/include/B2TrackerHit.hh \
-                         ../extended/parallel/TBB/B2b/include/B2TrackerSD.hh \
-                         ../extended/parallel/TBB/B2b/src/B2ActionInitialization.cc \
-                         ../extended/parallel/TBB/B2b/src/B2bChamberParameterisation.cc \
-                         ../extended/parallel/TBB/B2b/src/B2bDetectorConstruction.cc \
-                         ../extended/parallel/TBB/B2b/src/B2bDetectorMessenger.cc \
-                         ../extended/parallel/TBB/B2b/src/B2EventAction.cc \
-                         ../extended/parallel/TBB/B2b/src/B2PrimaryGeneratorAction.cc \
-                         ../extended/parallel/TBB/B2b/src/B2RunAction.cc \
-                         ../extended/parallel/TBB/B2b/src/B2TrackerHit.cc \
-                         ../extended/parallel/TBB/B2b/src/B2TrackerSD.cc \
-                         ../extended/parameterisations/gflash/gflasha \
-                         ../extended/parameterisations/gflash/gflash2/include/ExGflashActionInitialization.hh \
-                         ../extended/parameterisations/gflash/gflash2/include/ExGflashEventAction.hh \
-                         ../extended/parameterisations/gflash/gflash2/include/ExGflashHit.hh \
-                         ../extended/parameterisations/gflash/gflash2/include/ExGflashHitsCollection.hh \
-                         ../extended/parameterisations/gflash/gflash2/include/ExGflashPrimaryGeneratorAction.hh \
-                         ../extended/parameterisations/gflash/gflash2/include/ExGflashRunAction.hh \
-                         ../extended/parameterisations/gflash/gflash2/src/ExGflashActionInitialization.cc \
-                         ../extended/parameterisations/gflash/gflash2/src/ExGflashEventAction.cc \
-                         ../extended/parameterisations/gflash/gflash2/src/ExGflashHit.cc \
-                         ../extended/parameterisations/gflash/gflash2/src/ExGflashPrimaryGeneratorAction.cc \
-                         ../extended/parameterisations/gflash/gflash2/src/ExGflashRunAction.cc \
-                         ../extended/parameterisations/gflash/gflash3/include/ExGflashActionInitialization.hh \
-                         ../extended/parameterisations/gflash/gflash3/include/ExGflashEventAction.hh \
-                         ../extended/parameterisations/gflash/gflash3/include/ExGflashHit.hh \
-                         ../extended/parameterisations/gflash/gflash3/include/ExGflashHitsCollection.hh \
-                         ../extended/parameterisations/gflash/gflash3/include/ExGflashPrimaryGeneratorAction.hh \
-                         ../extended/parameterisations/gflash/gflash3/include/ExGflashRunAction.hh \
-                         ../extended/parameterisations/gflash/gflash3/src/ExGflashActionInitialization.cc \
-                         ../extended/parameterisations/gflash/gflash3/src/ExGflashEventAction.cc \
-                         ../extended/parameterisations/gflash/gflash3/src/ExGflashHit.cc \
-                         ../extended/parameterisations/gflash/gflash3/src/ExGflashPrimaryGeneratorAction.cc \
-                         ../extended/parameterisations/gflash/gflash3/src/ExGflashRunAction.cc \
-                         ../extended/visualization/userVisAction/include/B1ActionInitialization.hh \
-                         ../extended/visualization/userVisAction/include/B1DetectorConstruction.hh \
-                         ../extended/visualization/userVisAction/include/B1EventAction.hh \
-                         ../extended/visualization/userVisAction/include/B1PrimaryGeneratorAction.hh \
-                         ../extended/visualization/userVisAction/include/B1Run.hh \
-                         ../extended/visualization/userVisAction/include/B1RunAction.hh \
-                         ../extended/visualization/userVisAction/include/B1SteppingAction.hh \
-                         ../extended/visualization/userVisAction/src/B1ActionInitialization.cc \
-                         ../extended/visualization/userVisAction/src/B1DetectorConstruction.cc \
-                         ../extended/visualization/userVisAction/src/B1EventAction.cc \
-                         ../extended/visualization/userVisAction/src/B1PrimaryGeneratorAction.cc \
-                         ../extended/visualization/userVisAction/src/B1Run.cc \
-                         ../extended/visualization/userVisAction/src/B1RunAction.cc \
-                         ../extended/visualization/userVisAction/src/B1SteppingAction.cc
+EXCLUDE                = ../panda-controller/build \
+			 ../user-interface/build \
+			 ../user-interface/external
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1376,7 +1093,7 @@ HTML_STYLESHEET        =
 # list). For an example see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = extra_stylesheet.css
+HTML_EXTRA_STYLESHEET  =
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1386,7 +1103,7 @@ HTML_EXTRA_STYLESHEET  = extra_stylesheet.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = images/geanttiny.gif
+HTML_EXTRA_FILES       = 
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
@@ -2355,7 +2072,7 @@ PERL_PATH              = /usr/bin/perl
 # powerful graphs.
 # The default value is: YES.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see:
