@@ -109,19 +109,46 @@ client:
 
 ### Start Software
 
-On *Desktop*:
+On *Desktop* execute the following to push, build and run the actual code to the *NUC* :
 
+```bash
+deploy 3
+```
 
+You should see:
 
-~~~{.sh}
-sudo test 
-~~~
+```
+Robot started!
+```
 
+Open a new terminal on *Desktop* and execute:
 
+```bash
+cd user-interface
+mkdir build
+cd build
+qmake ../userinterface.pro
+make
+./userinterface
+```
+
+A gui window should open.
 
 ### Camera Calibration
 
+Before using the camera, they have to be calibrated:
+
+- Inside the gui choose the *Misc* tab. 
+- Click *Create ChArUco Board* and print it with scale 100%.
+- Fix the printed paper on a solid surface.
+- Point the left camera on the board and click *Take Photo*
+- Change the position of the camera and click again *Take Photo*
+- Repeat this step 10 times
+- Now click on Calibrate. The actual calibration parameters are stored in *config/camera_parameters.yaml*
+
 ### Teaching
+
+
 
 ## Study
 
@@ -134,8 +161,6 @@ Part 0:
 - Detect handling position 0
 - Detect handling position 1
 - Detect water bath
-- (Turn on water bath)
-- (Check temperatur)
 
 Part 1:
 - Open freezer
@@ -149,7 +174,7 @@ Part 2:
 - Open box
 - Pick correct vessel
 - Put it into holder
-- Open wather bath
+- Open water bath
 - Put holder into water bath
 - Close Water bath
 
