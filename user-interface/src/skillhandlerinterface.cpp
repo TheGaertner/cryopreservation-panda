@@ -121,17 +121,21 @@ void SkillHandlerInterface::updateConfig()
     ConfigHandler::updateConfig(skills_dict,"skills.yaml");
 }
 
-void SkillHandlerInterface::playSequence()
+void SkillHandlerInterface::playSequence_handler()
 {
-    for(int i = 0; i < sequence_elements_.size(); i++){
-        if(sequence_elements_[i] == "Stop"){
+    playSequence(sequence_elements_);
+}
+
+void SkillHandlerInterface::playSequence(std::vector<std::string> sequence_elements){
+    for(int i = 0; i < sequence_elements.size(); i++){
+        if(sequence_elements[i] == "Stop"){
             break;
         }
-        if(sequence_elements_[i].find("RelToMarker") == 0){
-            emit command(QString::fromStdString(skill_handler_->go_to_relative_pose(sequence_elements_[i])));
+        if(sequence_elements[i].find("RelToMarker") == 0){
+            emit command(QString::fromStdString(skill_handler_->go_to_relative_pose(sequence_elements[i])));
             continue;
         }
-        emit command(QString::fromStdString(sequence_elements_[i]));
+        emit command(QString::fromStdString(sequence_elements[i]));
     }
 
 }

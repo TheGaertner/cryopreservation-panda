@@ -62,7 +62,7 @@ public:
 
     void init();
     void updateConfig();
-    void playSequence();
+    void playSequence(std::vector<std::string> sequence_elements);
 
     void setActualMarker(QListWidgetItem *item){skill_handler_->setActualMarker(item);};
     void setLastState(StateSerialization *state){skill_handler_->setLastState(state);};
@@ -85,6 +85,7 @@ public:
 
     explicit SkillHandlerInterface(QObject *parent = nullptr);
 
+    void playSequence_handler();
 private:
     SkillHandler *skill_handler_;
 

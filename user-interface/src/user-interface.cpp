@@ -10,7 +10,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
                     std::chrono::system_clock::now().time_since_epoch()))
     , marker_(&last_state_)
     , skill_handler_interface_()
-    , task_handler_()
+    , task_handler_(&skill_handler_interface_)
 {
 
     ui->setupUi(this);
@@ -126,7 +126,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(ui->pushButton_25,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::moveSequenceElementUp);
     connect(ui->pushButton_24,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::moveSequenceElementDown);
 
-    connect(ui->pushButton_34,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::playSequence);
+    connect(ui->pushButton_34,&QPushButton::clicked,&skill_handler_interface_,&SkillHandlerInterface::playSequence_handler);
     connect(&skill_handler_interface_,&SkillHandlerInterface::command,tcp_command_,[=](QString command) { tcp_command_->write_command(command);});
 
 
@@ -198,13 +198,43 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(&skill_handler_interface_,&SkillHandlerInterface::clearGroupWidget, ui->listWidget_15,&QListWidget::clear);
     connect(&skill_handler_interface_,&SkillHandlerInterface::clearGroupWidget, ui->listWidget_16,&QListWidget::clear);
     connect(&skill_handler_interface_,&SkillHandlerInterface::addGroupToWidgetTask, ui->listWidget_16,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(&skill_handler_interface_,&SkillHandlerInterface::clearSkillWidget, ui->listWidget_15,&QListWidget::clear);
+    connect(ui->listWidget_16,&QListWidget::itemClicked, ui->listWidget_15,&QListWidget::clear);
+    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::setSelectedGroup);
+    connect(&skill_handler_interface_,&SkillHandlerInterface::setGroupRow, ui->listWidget_16,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
+
+    connect(&skill_handler_interface_,&SkillHandlerInterface::addSkillToWidgetTask, ui->listWidget_15,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(&task_handler_,&TaskHandler::addSkillToWidgetTask, ui->listWidget_15,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+
+    connect(ui->pushButton_27,&QPushButton::clicked,&task_handler_,&TaskHandler::addTask);
+    connect(ui->lineEdit_14,&QLineEdit::textChanged,&task_handler_,&TaskHandler::setNewTaskName);
+    connect(&task_handler_,&TaskHandler::clearTaskWidget, ui->listWidget_17,&QListWidget::clear);
+    connect(&task_handler_,&TaskHandler::addTaskToWidget, ui->listWidget_17,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(ui->listWidget_17,&QListWidget::itemClicked,&task_handler_,&TaskHandler::setSelectedTask);
+    connect(&task_handler_,&TaskHandler::setTaskRow, ui->listWidget_17,static_cast<void (QListWidget::*)(int)>(&QListWidget::setCurrentRow));
+    connect(ui->pushButton_26,&QPushButton::clicked,&task_handler_,&TaskHandler::removeTask);
+    connect(ui->pushButton_36,&QPushButton::clicked,&task_handler_,&TaskHandler::addStep);
+    connect(&task_handler_,&TaskHandler::clearStepsWidgete, ui->listWidget_18,&QListWidget::clear);
+    connect(&task_handler_,&TaskHandler::addStepToWidget, ui->listWidget_18,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+    connect(ui->listWidget_15,&QListWidget::itemClicked,&task_handler_,&TaskHandler::setSelectedSkill);
+    connect(ui->listWidget_17,&QListWidget::itemClicked, ui->listWidget_18,&QListWidget::clear);
+    connect(ui->listWidget_17,&QListWidget::itemClicked,&task_handler_,&TaskHandler::openSteps);
+
+
+    connect(ui->listWidget_29,&QListWidget::itemClicked, &task_handler_,&TaskHandler::setMainTask);
+
+    connect(ui->pushButton_47,&QPushButton::clicked,&task_handler_,&TaskHandler::executeMainTask);
+    connect(&task_handler_,&TaskHandler::clearTaskWidget, ui->listWidget_29,&QListWidget::clear);
+    connect(&task_handler_,&TaskHandler::addTaskToWidgetMain, ui->listWidget_29,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
+
+
+
 //    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::setSelectedGroup);
 //    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::openSkills);
-    connect(&skill_handler_interface_,&SkillHandlerInterface::clearSkillWidget, ui->listWidget_15,&QListWidget::clear);
-    connect(&skill_handler_interface_,&SkillHandlerInterface::addSkillToWidgetTask, ui->listWidget_15,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
 
 
     skill_handler_interface_.init();
+    task_handler_.init();
 
     // Calibration
     connect(ui->pushButton_10,&QPushButton::clicked,CameraCalibration::create_board);
