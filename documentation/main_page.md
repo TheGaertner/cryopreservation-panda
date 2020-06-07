@@ -1,12 +1,25 @@
 # cryopreservation-panda
 
-With this application it is possible to teach a Franka Emika Panda how to thaw biological samples
+With this application it is possible to teach a Franka Emika Panda how to thaw biological samples.
+
+[![](http://img.youtube.com/vi/bXo68UFNyhk/0.jpg)](http://www.youtube.com/watch?v=bXo68UFNyhk "Cryopreservation Example")
+
+
+
+The system structure is looking like:
+
+![](images/architecture.jpg)
+
+
 
 ## Requirements
 
+Hardware:
 
+- Franka Emika Panda with firmware: 
+- 
 
-### 3D Model Gripper
+- the 3D printed gripper
 
 ## Installation
 
