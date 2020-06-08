@@ -3,6 +3,8 @@
 
 #include "serialization.h"
 
+#include <user-interface.h>
+
 UserInterface::UserInterface(QWidget *parent, QString  command)
     : QMainWindow(parent)
     , ui(new Ui::UserInterface)
@@ -93,6 +95,9 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
 
     // Update Plot
     connect(this,&UserInterface::current_robot_state,this,&UserInterface::update_plot);
+
+    // Update Response
+    connect(this,&UserInterface::current_robot_state,this,&UserInterface::update_response);
 
     // Group Widget
     skill_handler_interface_.setup_skillhandler(videostream_0);
@@ -193,6 +198,8 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
 
     connect(ui->pushButton_42,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.set_actual_position_cart(ui->lineEdit_43->text().toDouble());});
 
+    // Joint Pose
+    connect(ui->pushButton_51,&QPushButton::clicked,&skill_handler_interface_,[&]() { skill_handler_interface_.commandUpdateDevice();});
 
 
     // Task handler
@@ -228,11 +235,13 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     connect(&task_handler_,&TaskHandler::clearTaskWidget, ui->listWidget_29,&QListWidget::clear);
     connect(&task_handler_,&TaskHandler::addTaskToWidgetMain, ui->listWidget_29,static_cast<void (QListWidget::*)(QListWidgetItem *)>(&QListWidget::addItem));
 
-
+    DeviceHandler device_handler;
+    device_handler.setAllToUnseen();
 
 //    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::setSelectedGroup);
 //    connect(ui->listWidget_16,&QListWidget::itemClicked,&task_handler_,&TaskHandler::openSkills);
 
+    connect(this,&UserInterface::current_robot_state,&skill_handler_interface_,&SkillHandlerInterface::updateDevice);
 
     skill_handler_interface_.init();
     task_handler_.init();
@@ -316,13 +325,18 @@ void UserInterface::on_lineEdit_8_returnPressed()
 // Update marker list
 void UserInterface::update_marker_list(std::vector<int> ids)
 {
-    ui->listWidget->clear();
-    ui->listWidget_6->clear();
+    //std::cout << previous_marker_list_.size() << std::endl;
+    if(previous_marker_list_ != ids){
+        ui->listWidget->clear();
+        ui->listWidget_6->clear();
 
-    for(auto& element : ids){
-        new QListWidgetItem(QString::number(element), ui->listWidget);
-        new QListWidgetItem(QString::number(element), ui->listWidget_6);
+        for(auto& element : ids){
+            new QListWidgetItem(QString::number(element), ui->listWidget);
+            new QListWidgetItem(QString::number(element), ui->listWidget_6);
+        }
+        previous_marker_list_ = ids;
     }
+
 }
 
 void UserInterface::update_statusbar(StateSerialization *state)
@@ -412,6 +426,12 @@ void UserInterface::update_tablewidgets(StateSerialization *state)
     // Print matrixes
     setTableWidgetContent(ui->tableWidget,ui->comboBox_3->currentText(),state);
     setTableWidgetContent(ui->tableWidget_2,ui->comboBox_4->currentText(),state);
+}
+
+void UserInterface::update_response(StateSerialization *state){
+    if(state->message != ""){
+        ui->listWidget_30->addItem(state->message.c_str());
+    }
 }
 
 void UserInterface::update_plot(StateSerialization *state)

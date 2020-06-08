@@ -37,6 +37,7 @@ public:
     void relPose(double x, double y, double z, double xx, double yy, double zz, double duration=15,bool EE_frame = false);
     void joint_pose(double q0,double q1, double q2,double q3,double q4,double q5,double q6, double speedfactor);
     void absPose(Eigen::Matrix<double, 4, 4> goal_pose, double duration=15);
+    void takePhoto();
 
 
     Skills(franka::Robot *robot,franka::Gripper *gripper, Printer *printer);

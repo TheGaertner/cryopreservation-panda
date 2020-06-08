@@ -102,7 +102,10 @@ void task_handler::execute_task()
 
 
                 if(name.find("Gripper Homing")==0)  {
+                    std::cout << "1" << std::endl;
+                    gripper_->stop();
                     gripper_->homing();
+                    std::cout << "2" << std::endl;
                     franka::GripperState gripper_state = gripper_->readOnce();
                     std::cout << "Gripper width: " << gripper_state.max_width << std::endl;
                 }else{
@@ -116,9 +119,12 @@ void task_handler::execute_task()
                         force = std::stod(strs[3]);
                         tolerance = std::stod(strs[4]);
 //                    }
+                    gripper_->stop();
+                    std::this_thread::sleep_for (std::chrono::milliseconds(static_cast<int>(1000)));
+//                    std::cout << gripper_->move(0.00,0.02) << std::endl;
+//                    gripper_->grasp(0.042,0.02,5);
 
-
-                    if (!gripper_->grasp(grasping_width, speed, force,tolerance,tolerance)) {
+                    if (!gripper_->grasp( grasping_width, speed, force,tolerance,tolerance)) { //
                         std::cout << "Failed to grasp object." << std::endl;
                     }else{
                         std::cout << "Object grasped!" << std::endl;
@@ -215,6 +221,15 @@ void task_handler::execute_task()
                 skills_->push(direction,distance);
 
                 std::cout << strs[0]+" finished!"<< std::endl;
+            }
+
+            if(name.find("TakePhoto")==0){
+                std::cout << "___________________________" << std::endl;
+                std::cout << "Start: Wait 1 second and then send photo command" << std::endl;
+                std::this_thread::sleep_for (std::chrono::milliseconds(static_cast<int>(1000)));
+                skills_->takePhoto();
+                std::this_thread::sleep_for (std::chrono::milliseconds(static_cast<int>(1000)));
+                std::cout << "Take photo finished!"<< std::endl;
             }
 
         }

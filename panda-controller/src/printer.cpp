@@ -20,6 +20,7 @@ void Printer::send_loop(){
                     boost::archive::binary_oarchive out_archive(os);
                     out_archive << serialized_state_;
                 }
+                serialized_state_.message = "";
 
                 // Send serialized state
                 udp_server_.start_send(&buffer);

@@ -31,6 +31,7 @@
 #include "marker.h"
 #include "skillhandlerinterface.h"
 #include "taskhandler.h"
+#include "devicehandler.h"
 
 
 
@@ -75,6 +76,8 @@ private slots:
     void update_tablewidgets(StateSerialization *state);
 
     void update_plot(StateSerialization *state);
+
+    void update_response(StateSerialization *state);
 
     void on_pushButton_6_clicked();
 
@@ -127,6 +130,7 @@ private:
     Marker marker_;
     SkillHandlerInterface skill_handler_interface_;
     TaskHandler task_handler_;
+    std::vector<int> previous_marker_list_;
 
 
 };

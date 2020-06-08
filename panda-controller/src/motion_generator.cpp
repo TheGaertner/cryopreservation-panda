@@ -34,12 +34,12 @@ void setDefaultBehavior(franka::Robot *robot) {
     std::array<double, 7>joint_collision;
     joint_collision.fill(20);
     std::array<double, 7>joint_contact;
-    joint_contact.fill(7);
+    joint_contact.fill(20);
 
     std::array<double, 6>cartesian_collision;
     cartesian_collision.fill(20);
     std::array<double, 6>cartesian_contact;
-    cartesian_contact.fill(7);
+    cartesian_contact.fill(20);
 
     robot->setCollisionBehavior(
                 joint_contact, joint_collision,

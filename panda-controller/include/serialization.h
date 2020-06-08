@@ -46,6 +46,7 @@ public:
     static std::vector<std::string> getNames();
 
     std::string sender_ip;
+    std::string message;
     int sender_port;
 
 private:
@@ -73,6 +74,7 @@ private:
         ar & state_->K_F_ext_hat_K;
         ar & state_->F_T_EE;
         ar & robot_mode_converted;
+        ar & message;
     };
 
 

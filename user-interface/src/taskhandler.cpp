@@ -180,6 +180,6 @@ void TaskHandler::executeMainTask(){
         std::string skill = results[1];
 
         std::vector<std::string> sequence = skills_dict[group][skill].as<std::vector<std::string>>();
-        skill_handler_interface_->playSequence(sequence);
+        skill_handler_interface_->storeSequence(sequence);
     }
 }

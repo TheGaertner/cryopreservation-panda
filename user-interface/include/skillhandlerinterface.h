@@ -62,14 +62,17 @@ public:
 
     void init();
     void updateConfig();
-    void playSequence(std::vector<std::string> sequence_elements);
+    void playSequence();
 
     void setActualMarker(QListWidgetItem *item){skill_handler_->setActualMarker(item);};
+
+    void updateDevice(StateSerialization *state){skill_handler_->updateDevice(state);if(state->message != ""){playSequence();}};
     void setLastState(StateSerialization *state){skill_handler_->setLastState(state);};
     void savePose(){skill_handler_->setActualPose();};
     void saveDuration(QString time){skill_handler_->setDuration(time.toDouble());};
 
     void createRelativePose();
+    void commandUpdateDevice();
     void createJointPosition(double speedfactor);
     void createRelMovement(double x, double y, double z, double xx, double yy, double zz, double duration, bool EE_frame);
     void gripper_action(double width, double speed, double force, double tolerance);
@@ -86,6 +89,7 @@ public:
     explicit SkillHandlerInterface(QObject *parent = nullptr);
 
     void playSequence_handler();
+    void storeSequence(std::vector<std::string> sequence_elements);
 private:
     SkillHandler *skill_handler_;
 
@@ -98,6 +102,7 @@ private:
     std::string new_skill_name_;
 
     std::vector<std::string> sequence_elements_;
+    std::vector<std::string> running_sequence_;
     std::string selected_sequence_element_name_;
     //std::string new_sequence_element_name_;
 };

@@ -18,7 +18,27 @@ void SkillHandler::setActualMarker(QListWidgetItem *item)
     DeviceHandler device_handler;
     DEVICE device = device_handler.get_device(actual_marker_id_);
     device.position = marker_position;
+    device.seen_since_startup = true;
     device_handler.update_device(actual_marker_id_,device);
+}
+
+void SkillHandler::updateDevice(StateSerialization *state)
+{
+    if(state->message != ""){
+        //    actual_marker_id_ = item->text().toInt();
+        std::tuple<std::vector<int>,std::vector<Eigen::Matrix<double, 4, 4>>> output;
+        Marker marker_detector(&lastState_);
+        output = marker_detector.get_marker(videostream_->last_image_);
+
+
+        for(unsigned long i = 0; i < std::get<0>(output).size(); i++){
+            DeviceHandler device_handler;
+            DEVICE device = device_handler.get_device(std::get<0>(output)[i] );
+            device.position = std::get<1>(output)[i];
+            device.seen_since_startup = true;
+            device_handler.update_device(std::get<0>(output)[i] ,device);
+        }
+    }
 }
 
 void SkillHandler::setLastState(StateSerialization *state)
@@ -47,8 +67,8 @@ std::string SkillHandler::create_relative_pose()
     command += std::to_string(actual_marker_id_);
     command += " ";
     for(int i = 0; i < rel_position.size(); i ++){
-         command += std::to_string(rel_position(i));
-         command += " ";
+        command += std::to_string(rel_position(i));
+        command += " ";
     }
 
     return command;

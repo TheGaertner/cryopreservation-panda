@@ -29,6 +29,7 @@ void SkillHandlerInterface::moveSequenceElementUp()
 
 }
 
+
 void SkillHandlerInterface::moveSequenceElementDown()
 {
     std::vector<std::string>::iterator it = std::find(sequence_elements_.begin(), sequence_elements_.end(), selected_sequence_element_name_);
@@ -92,6 +93,7 @@ void SkillHandlerInterface::init()
     movement_primitves.append("Gripper");
     movement_primitves.append("Set Collision / Contact Force");
     movement_primitves.append("Set Cartesian Impedance");
+    movement_primitves.append("Update Device Position");
 
     emit addMovementPrimitiveToWidget(movement_primitves);
 }
@@ -123,19 +125,36 @@ void SkillHandlerInterface::updateConfig()
 
 void SkillHandlerInterface::playSequence_handler()
 {
-    playSequence(sequence_elements_);
+    running_sequence_ = sequence_elements_;
+    playSequence();
 }
 
-void SkillHandlerInterface::playSequence(std::vector<std::string> sequence_elements){
-    for(int i = 0; i < sequence_elements.size(); i++){
-        if(sequence_elements[i] == "Stop"){
-            break;
+void SkillHandlerInterface::storeSequence(std::vector<std::string> sequence_elements)
+{
+    running_sequence_ = sequence_elements;
+    playSequence();
+}
+
+void SkillHandlerInterface::playSequence(){
+    int last_element = 0;
+    if(!running_sequence_.empty()){
+        for(int i = 0; i < running_sequence_.size(); i++){
+            if(running_sequence_[i] == "Stop"){
+                break;
+            }
+            if(running_sequence_[i].find("RelToMarker") == 0){
+                emit command(QString::fromStdString(skill_handler_->go_to_relative_pose(running_sequence_[i])));
+                continue;
+            }
+            emit command(QString::fromStdString(running_sequence_[i]));
+
+            if(running_sequence_[i] == "TakePhoto"){
+                last_element = i+1;
+                break;
+            }
         }
-        if(sequence_elements[i].find("RelToMarker") == 0){
-            emit command(QString::fromStdString(skill_handler_->go_to_relative_pose(sequence_elements[i])));
-            continue;
-        }
-        emit command(QString::fromStdString(sequence_elements[i]));
+        running_sequence_ = std::vector<std::string>(running_sequence_.begin () + last_element, running_sequence_.end ());
+
     }
 
 }
@@ -147,6 +166,14 @@ void SkillHandlerInterface::createRelativePose()
     updateSequenceWidget();
     updateConfig();
 
+}
+
+void SkillHandlerInterface::commandUpdateDevice()
+{
+    std::string command = "TakePhoto";
+    sequence_elements_.push_back(command);
+    updateSequenceWidget();
+    updateConfig();
 }
 
 void SkillHandlerInterface::createJointPosition(double speedfactor)

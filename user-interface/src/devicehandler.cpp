@@ -12,7 +12,7 @@ DEVICE DeviceHandler::get_device(int id)
 
     DEVICE device;
     device.id = id;
-    device.marker_size = 50;
+    device.marker_size = 0.50;
     device.name = "Not saved Device";
     device.position = Eigen::Matrix<double, 4, 4>::Zero();
     device.seen_since_startup = false;
@@ -41,7 +41,7 @@ DeviceHandler::DeviceHandler()
         DEVICE device;
         device.id = stoi(entry);
         device.name = config[entry]["Name"].as<string>();
-        device.marker_size = config[entry]["MarkerSize"].as<int>();
+        device.marker_size = config[entry]["MarkerSize"].as<double>();
 
         std::vector<double> position = config[entry]["Position"].as<std::vector<double>>();
         device.position = Eigen::Matrix<double, 4, 4>(position.data());
@@ -73,4 +73,27 @@ void DeviceHandler::save_devices()
     config["Devices"] = device_ids;
 
     ConfigHandler::updateConfig(config,"devices.yaml");
+}
+
+void DeviceHandler::setAllToUnseen(){
+    YAML::Node config = ConfigHandler::getConfig("devices.yaml");
+
+    vector<string> device_ids = config["Devices"].as<vector<string>>();
+
+    devices.clear();
+    for (auto entry : device_ids) {
+        DEVICE device;
+        device.id = stoi(entry);
+        device.name = config[entry]["Name"].as<string>();
+        device.marker_size = config[entry]["MarkerSize"].as<double>();
+
+        std::vector<double> position = config[entry]["Position"].as<std::vector<double>>();
+        device.position = Eigen::Matrix<double, 4, 4>(position.data());
+
+        device.seen_since_startup = false;
+
+        devices.push_back(device);
+    }
+
+    save_devices();
 }

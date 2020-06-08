@@ -213,6 +213,11 @@ void Skills::absPose(Eigen::Matrix<double, 4, 4> goal_pose, double duration)
 
 }
 
+void Skills::takePhoto()
+{
+    printer_->serialized_state_.message = "Take Photo";
+}
+
 
 
 Skills::Skills(franka::Robot *robot,franka::Gripper *gripper, Printer *printer):robot_(robot),gripper_(gripper),printer_(printer)

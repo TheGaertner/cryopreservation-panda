@@ -31,6 +31,7 @@ public:
 
     explicit SkillHandler(Videostream* videostream, QObject *parent = nullptr);
 
+    void updateDevice(StateSerialization *state);
 private:
     StateSerialization lastState_;
     Videostream* videostream_;

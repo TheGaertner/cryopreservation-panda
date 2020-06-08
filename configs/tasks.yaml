@@ -1,10 +1,4 @@
-Tasks:
-  - Test
-  - Test3
-  - Teset3
+Tasks: [Test]
 Test:
-  - Refrigerator&Open
-Test3:
-  - Holder 1&Test2
-Teset3:
-  - Standard&Go To Init
+  - Testing&First Movement
+  - Testing&Second Movement
