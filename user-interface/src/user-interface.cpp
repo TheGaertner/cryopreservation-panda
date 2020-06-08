@@ -12,6 +12,7 @@ UserInterface::UserInterface(QWidget *parent, QString  command)
     , skill_handler_interface_()
     , task_handler_(&skill_handler_interface_)
 {
+    //// \todo TODO Adding response window
 
     ui->setupUi(this);
 
