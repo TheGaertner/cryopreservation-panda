@@ -1,4 +1,15 @@
-Tasks: [Test]
-Test:
-  - Testing&First Movement
-  - Testing&Second Movement
+Tasks: [Freezer, Freezer2]
+Freezer:
+  - Freezer&Big Open
+  - Freezer&Little Open
+  - Freezer&Little Close
+  - Freezer&Big Close
+  - Handle Box&Grip Freezer
+Freezer2:
+  - Freezer&Big Open
+  - Freezer&Little Open
+  - Handle Box&Grip Freezer
+  - Handle Box&Put out Freezer
+  - Freezer&Back
+  - Freezer&Little Close
+  - Freezer&Big Close
