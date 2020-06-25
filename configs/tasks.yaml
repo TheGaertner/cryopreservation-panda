@@ -1,11 +1,10 @@
-Tasks: [Freezer, Freezer2]
-Freezer:
-  - Freezer&Big Open
-  - Freezer&Little Open
-  - Freezer&Little Close
-  - Freezer&Big Close
-  - Handle Box&Grip Freezer
-Freezer2:
+Tasks:
+  - Take Box Outside
+  - Put in water bath
+  - Put out of water bath
+Take Box Outside:
+  - General&Init
+  - General&Gripper Homing
   - Freezer&Big Open
   - Freezer&Little Open
   - Handle Box&Grip Freezer
@@ -13,3 +12,18 @@ Freezer2:
   - Freezer&Back
   - Freezer&Little Close
   - Freezer&Big Close
+  - Freezer&Back
+  - Handle Box&Open Box
+Put in water bath:
+  - Water bath&Open
+  - Handle Box 2&Test
+  - Water bath&Inside Fix
+  - Water bath&Close
+  - General&Init
+Put out of water bath:
+  - General&Init
+  - Water bath&Open
+  - Handle Box 2&Grip Inside
+  - Water bath&Outside fix
+  - Water bath&Close
+  - General&Init

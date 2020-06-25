@@ -131,8 +131,14 @@ void SkillHandlerInterface::playSequence_handler()
 
 void SkillHandlerInterface::storeSequence(std::vector<std::string> sequence_elements)
 {
-    running_sequence_ = sequence_elements;
-    playSequence();
+    running_sequence_.insert(running_sequence_.end(), sequence_elements.begin(), sequence_elements.end());
+    //running_sequence_ = sequence_elements;
+
+}
+
+void SkillHandlerInterface::clearRunningSequence()
+{
+    running_sequence_.clear();
 }
 
 void SkillHandlerInterface::playSequence(){

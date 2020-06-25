@@ -168,6 +168,8 @@ void TaskHandler::setMainTask(QListWidgetItem *item)
 }
 
 void TaskHandler::executeMainTask(){
+    skill_handler_interface_->clearRunningSequence();
+
     YAML::Node tasks_dict = ConfigHandler::getConfig("tasks.yaml");
     YAML::Node skills_dict = ConfigHandler::getConfig("skills.yaml");
     std::vector<std::string> steps_from_dict = tasks_dict[main_task_name_].as<std::vector<std::string>>();
@@ -182,4 +184,6 @@ void TaskHandler::executeMainTask(){
         std::vector<std::string> sequence = skills_dict[group][skill].as<std::vector<std::string>>();
         skill_handler_interface_->storeSequence(sequence);
     }
+
+    skill_handler_interface_->playSequence();
 }

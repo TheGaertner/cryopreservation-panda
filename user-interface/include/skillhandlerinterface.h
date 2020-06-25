@@ -90,6 +90,7 @@ public:
 
     void playSequence_handler();
     void storeSequence(std::vector<std::string> sequence_elements);
+    void clearRunningSequence();
 private:
     SkillHandler *skill_handler_;
 
